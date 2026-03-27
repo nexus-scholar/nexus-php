@@ -56,7 +56,7 @@ $snowballConfig = new SnowballConfig(
     depth: 1
 );
 
-// Create snowball service
+// Create snowball service (now supports variadic providers)
 $snowballService = new SnowballService($snowballConfig, $openalex, $semanticScholar);
 
 // Your seed document (must have openalexId or s2Id for snowballing)

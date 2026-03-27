@@ -10,8 +10,9 @@ use Nexus\Models\Query;
 use Nexus\Models\QueryField;
 use Nexus\Utils\BooleanQueryTranslator;
 use Nexus\Utils\FieldExtractor;
+use Nexus\Core\SnowballProviderInterface;
 
-class OpenAlexProvider extends BaseProvider
+class OpenAlexProvider extends BaseProvider implements SnowballProviderInterface
 {
     private const BASE_URL = 'https://api.openalex.org/works';
     private BooleanQueryTranslator $translator;
@@ -318,6 +319,22 @@ class OpenAlexProvider extends BaseProvider
             }
 
             $params['cursor'] = $nextCursor;
+        }
+    }
+
+    public function getCitingDocuments(Document $document, int $limit = 100): Generator
+    {
+        $openalexId = $document->externalIds->openalexId;
+        if ($openalexId) {
+            yield from $this->getCitingWorks($openalexId, $limit);
+        }
+    }
+
+    public function getReferencedDocuments(Document $document, int $limit = 50): Generator
+    {
+        $openalexId = $document->externalIds->openalexId;
+        if ($openalexId) {
+            yield from $this->getReferencedWorks($openalexId, $limit);
         }
     }
 

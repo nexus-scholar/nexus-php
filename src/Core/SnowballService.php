@@ -4,22 +4,22 @@ namespace Nexus\Core;
 
 use Generator;
 use Nexus\Dedup\ConservativeStrategy;
+use Nexus\Dedup\DeduplicationStrategy;
 use Nexus\Models\DeduplicationConfig;
 use Nexus\Models\DeduplicationStrategyName;
 use Nexus\Models\Document;
 use Nexus\Models\DocumentCluster;
 use Nexus\Models\SnowballConfig;
-use Nexus\Providers\OpenAlexProvider;
-use Nexus\Providers\SemanticScholarProvider;
 
 class SnowballService
 {
-    private ConservativeStrategy $dedupStrategy;
+    private DeduplicationStrategy $dedupStrategy;
+    /** @var SnowballProviderInterface[] */
+    private array $providers;
 
     public function __construct(
         private SnowballConfig $config,
-        private OpenAlexProvider $openalex,
-        private SemanticScholarProvider $semanticScholar
+        SnowballProviderInterface ...$providers
     ) {
         $dedupConfig = new DeduplicationConfig(
             strategy: DeduplicationStrategyName::CONSERVATIVE,
@@ -27,6 +27,12 @@ class SnowballService
             maxYearGap: 1
         );
         $this->dedupStrategy = new ConservativeStrategy($dedupConfig);
+        $this->providers = $providers;
+    }
+
+    public function setDeduplicationStrategy(DeduplicationStrategy $strategy): void
+    {
+        $this->dedupStrategy = $strategy;
     }
 
     public function snowball(Document $seed, array $existingDocuments): array
@@ -34,32 +40,15 @@ class SnowballService
         $newDocuments = [];
         $allExisting = $existingDocuments;
 
-        $openalexId = $seed->externalIds->openalexId;
-        $s2Id = $seed->externalIds->s2Id;
-
-        if ($this->config->forward) {
-            if ($openalexId) {
-                foreach ($this->openalex->getCitingWorks($openalexId, $this->config->maxCitations) as $doc) {
+        foreach ($this->providers as $provider) {
+            if ($this->config->forward) {
+                foreach ($provider->getCitingDocuments($seed, $this->config->maxCitations) as $doc) {
                     $newDocuments[] = $doc;
                 }
             }
 
-            if ($s2Id) {
-                foreach ($this->semanticScholar->getCitingPapers($s2Id, $this->config->maxCitations) as $doc) {
-                    $newDocuments[] = $doc;
-                }
-            }
-        }
-
-        if ($this->config->backward) {
-            if ($openalexId) {
-                foreach ($this->openalex->getReferencedWorks($openalexId, $this->config->maxReferences) as $doc) {
-                    $newDocuments[] = $doc;
-                }
-            }
-
-            if ($s2Id) {
-                foreach ($this->semanticScholar->getReferences($s2Id, $this->config->maxReferences) as $doc) {
+            if ($this->config->backward) {
+                foreach ($provider->getReferencedDocuments($seed, $this->config->maxReferences) as $doc) {
                     $newDocuments[] = $doc;
                 }
             }
@@ -142,7 +131,7 @@ class SnowballService
                 $ids['s2'][strtolower($doc->externalIds->s2Id)] = true;
             }
             if ($doc->title) {
-                $normTitle = ConservativeStrategy::normalizeTitle($doc->title);
+                $normTitle = DeduplicationStrategy::normalizeTitle($doc->title);
                 $ids['title'][$normTitle] = true;
             }
         }
@@ -164,7 +153,7 @@ class SnowballService
         if ($doc->externalIds->s2Id && isset($idSet['s2'][strtolower($doc->externalIds->s2Id)])) {
             return true;
         }
-        if ($doc->title && isset($idSet['title'][ConservativeStrategy::normalizeTitle($doc->title)])) {
+        if ($doc->title && isset($idSet['title'][DeduplicationStrategy::normalizeTitle($doc->title)])) {
             return true;
         }
 

@@ -107,7 +107,6 @@ class SnowballIntegrationTest extends TestCase
             $outputFile = $exporter->exportDocuments($allResults, 'snowball_input', ['include_raw' => false]);
 
             $this->assertFileExists($outputFile);
-            echo "\nSaved " . count($allResults) . " documents to: " . $outputFile;
 
             $loadedData = json_decode(file_get_contents($outputFile), true);
             $this->assertIsArray($loadedData);
@@ -137,11 +136,6 @@ class SnowballIntegrationTest extends TestCase
             $seedDocument = $documents[0];
             $this->assertNotNull($seedDocument->externalIds->openalexId, 'Seed document should have an OpenAlex ID for snowballing');
 
-            echo "\nSelected seed document: " . $seedDocument->title;
-            echo "\nCitations: " . ($seedDocument->citedByCount ?? 'N/A');
-            echo "\nOpenAlex ID: " . ($seedDocument->externalIds->openalexId ?? 'N/A');
-            echo "\nSemantic Scholar ID: " . ($seedDocument->externalIds->s2Id ?? 'N/A');
-
             $snowballConfig = new SnowballConfig(
                 forward: true,
                 backward: true,
@@ -157,14 +151,11 @@ class SnowballIntegrationTest extends TestCase
 
             $uniqueNewDocs = $snowballService->snowball($seedDocument, $documents);
 
-            echo "\nFound " . count($uniqueNewDocs) . " unique new documents from snowballing";
-
             if (!empty($uniqueNewDocs)) {
                 $exporter = new JsonExporter($this->fixturesDir);
                 $outputFile = $exporter->exportDocuments($uniqueNewDocs, 'snowball_output', ['include_raw' => false]);
                 
                 $this->assertFileExists($outputFile);
-                echo "\nSaved snowball results to: " . $outputFile;
             }
 
             $this->assertIsArray($uniqueNewDocs);
@@ -203,8 +194,6 @@ class SnowballIntegrationTest extends TestCase
                 $clusters = $strategy->deduplicate($combinedDocs);
 
                 $this->assertNotEmpty($clusters);
-                echo "\nTotal clusters after dedup: " . count($clusters);
-                echo "\nTotal documents: " . count($combinedDocs);
             }
 
             $this->assertNotEmpty($existingDocs);

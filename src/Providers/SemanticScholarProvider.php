@@ -8,8 +8,9 @@ use Nexus\Models\Document;
 use Nexus\Models\ExternalIds;
 use Nexus\Models\Query;
 use Nexus\Utils\FieldExtractor;
+use Nexus\Core\SnowballProviderInterface;
 
-class SemanticScholarProvider extends BaseProvider
+class SemanticScholarProvider extends BaseProvider implements SnowballProviderInterface
 {
     private const BASE_URL = 'https://api.semanticscholar.org/graph/v1/paper/search/bulk';
     private const FIELDS = [
@@ -282,6 +283,22 @@ class SemanticScholarProvider extends BaseProvider
             if (count($data) < $params['limit']) {
                 break;
             }
+        }
+    }
+
+    public function getCitingDocuments(Document $document, int $limit = 100): Generator
+    {
+        $paperId = $document->externalIds->s2Id ?? $document->providerId;
+        if ($paperId) {
+            yield from $this->getCitingPapers($paperId, $limit);
+        }
+    }
+
+    public function getReferencedDocuments(Document $document, int $limit = 50): Generator
+    {
+        $paperId = $document->externalIds->s2Id ?? $document->providerId;
+        if ($paperId) {
+            yield from $this->getReferences($paperId, $limit);
         }
     }
 

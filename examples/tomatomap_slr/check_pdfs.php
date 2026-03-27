@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__.'/../../vendor/autoload.php';
 
 use Nexus\Models\Document;
 use Nexus\Models\ExternalIds;
@@ -10,17 +10,17 @@ use Nexus\Retrieval\Sources\OpenAlexSource;
 
 echo "=== PDF Retrieval - Maximum Yield (Consolidated) ===\n\n";
 
-$pdfsDir = __DIR__ . '/pdfs';
-if (!is_dir($pdfsDir)) {
+$pdfsDir = __DIR__.'/pdfs';
+if (! is_dir($pdfsDir)) {
     mkdir($pdfsDir, 0755, true);
 }
 
 $email = 'bekhouche.mouadh@univ-oeb.dz';
 $fetcher = new PDFFetcher($pdfsDir, $email);
 
-$inputFile = __DIR__ . '/deduped_results.json';
+$inputFile = __DIR__.'/deduped_results.json';
 $data = json_decode(file_get_contents($inputFile), true);
-echo "Loaded " . count($data) . " documents\n\n";
+echo 'Loaded '.count($data)." documents\n\n";
 
 $documents = [];
 foreach ($data as $item) {
@@ -48,29 +48,33 @@ foreach ($data as $item) {
 $arxivSource = new ArxivSource($email);
 $openalexSource = new OpenAlexSource($email);
 
-$limit = 20;
+$limit = 300;
 echo "=== Checking first {$limit} documents ===\n\n";
 
 $stats = ['arxiv' => 0, 'openalex' => 0, 'none' => 0];
 
 for ($i = 0; $i < min($limit, count($documents)); $i++) {
     $doc = $documents[$i];
-    
+
     $hasArxiv = $doc->externalIds->arxivId ? true : false;
     $hasOpenalex = false;
-    
+
     if ($doc->externalIds->doi) {
         $urls = $openalexSource->getPdfUrls($doc);
-        $hasOpenalex = !empty($urls);
+        $hasOpenalex = ! empty($urls);
     }
-    
-    if ($hasArxiv) $stats['arxiv']++;
-    elseif ($hasOpenalex) $stats['openalex']++;
-    else $stats['none']++;
-    
+
+    if ($hasArxiv) {
+        $stats['arxiv']++;
+    } elseif ($hasOpenalex) {
+        $stats['openalex']++;
+    } else {
+        $stats['none']++;
+    }
+
     $title = substr($doc->title, 0, 40);
     echo "[{$i}] {$title}...\n";
-    echo "    arXiv: " . ($hasArxiv ? '✓' : '✗') . " | OpenAlex OA: " . ($hasOpenalex ? '✓' : '✗') . "\n";
+    echo '    arXiv: '.($hasArxiv ? '✓' : '✗').' | OpenAlex OA: '.($hasOpenalex ? '✓' : '✗')."\n";
 }
 
 echo "\n=== Summary ===\n";
@@ -85,7 +89,7 @@ foreach (array_slice($documents, 0, $limit) as $doc) {
     $path = $fetcher->fetch($doc);
     if ($path) {
         $downloaded++;
-        echo "✓ " . basename($path) . "\n";
+        echo '✓ '.basename($path)."\n";
     }
 }
 
