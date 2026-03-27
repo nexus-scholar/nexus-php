@@ -4,3 +4,5 @@
 /.env
 /.env.local
 /tests/fixtures/*.json
+/examples/tomatomap_slr/*.json
+!/examples/tomatomap_slr/run_search.php
