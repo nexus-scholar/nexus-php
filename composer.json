@@ -1,0 +1,45 @@
+{
+  "name": "nexus/nexus-php",
+  "description": "A PHP port of the Nexus Research Engine logic",
+  "version": "1.0.0",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Nexus Team"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": "^8.3",
+    "guzzlehttp/guzzle": "^7.8",
+    "symfony/yaml": "^7.0 || ^8.0",
+    "illuminate/contracts": "^11.0 || ^12.0",
+    "illuminate/bus": "^11.0 || ^12.0",
+    "illuminate/queue": "^11.0 || ^12.0",
+    "illuminate/events": "^11.0 || ^12.0",
+    "illuminate/cache": "^11.0 || ^12.0",
+    "laravel/ai": "^0.2 || ^1.0",
+    "ext-simplexml": "*"
+  },
+  "require-dev": {
+    "pestphp/pest": "^3.0",
+    "laravel/pint": "^1.29"
+  },
+  "autoload": {
+    "psr-4": {
+      "Nexus\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Nexus\\Tests\\": "tests/"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  }
+}
