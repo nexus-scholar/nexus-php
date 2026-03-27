@@ -13,13 +13,21 @@ class ArxivSource extends BaseSource
 
     public function fetch(Document $doc, string $outputPath): bool
     {
-        $arxivId = $doc->externalIds->arxivId;
-        if (! $arxivId) {
+        $url = $this->getPdfUrl($doc);
+        if (!$url) {
             return false;
         }
 
-        $url = "https://arxiv.org/pdf/{$arxivId}.pdf";
-
         return $this->downloadFile($url, $outputPath);
+    }
+
+    public function getPdfUrl(Document $doc): ?string
+    {
+        $arxivId = $doc->externalIds->arxivId;
+        if (!$arxivId) {
+            return null;
+        }
+
+        return "https://arxiv.org/pdf/{$arxivId}.pdf";
     }
 }

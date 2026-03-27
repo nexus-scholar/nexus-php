@@ -9,4 +9,6 @@ interface PDFSourceInterface
     public function getName(): string;
 
     public function fetch(Document $doc, string $outputPath): bool;
+
+    public function getPdfUrl(Document $doc): ?string;
 }

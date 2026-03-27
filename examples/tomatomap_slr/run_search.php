@@ -1,27 +1,27 @@
 <?php
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__.'/../../vendor/autoload.php';
 
 use Nexus\Config\ConfigLoader;
 use Nexus\Core\ProviderFactory;
+use Nexus\Core\SnowballService;
 use Nexus\Dedup\ConservativeStrategy;
+use Nexus\Export\JsonExporter;
 use Nexus\Models\DeduplicationConfig;
 use Nexus\Models\DeduplicationStrategyName;
 use Nexus\Models\Query;
 use Nexus\Models\SnowballConfig;
-use Nexus\Core\SnowballService;
-use Nexus\Export\JsonExporter;
 use Symfony\Component\Yaml\Yaml;
 
 echo "=== TomatoMAP SLR - Full Search & Snowballing Demo ===\n\n";
 
-$configData = Yaml::parseFile(__DIR__ . '/../../config.yml');
-$queriesData = Yaml::parseFile(__DIR__ . '/../../queries.yml');
+$configData = Yaml::parseFile(__DIR__.'/../../config.yml');
+$queriesData = Yaml::parseFile(__DIR__.'/../../queries.yml');
 
 $queries = $queriesData['queries'];
 $outputDir = __DIR__;
 
-echo "Loaded " . count($queries) . " queries\n";
+echo 'Loaded '.count($queries)." queries\n";
 echo "Using providers: openalex, s2 (for speed)\n\n";
 
 $config = ConfigLoader::loadDefault();
@@ -39,7 +39,7 @@ foreach ($queries as $q) {
     $maxResults = min($q['max_results'] ?? 50, 30);
     $queryId = $q['id'] ?? "Q{$queryCount}";
 
-    echo "[$queryCount/" . count($queries) . "] {$queryId}: ";
+    echo "[$queryCount/".count($queries)."] {$queryId}: ";
 
     $query = new Query(
         text: $text,
@@ -61,15 +61,15 @@ foreach ($queries as $q) {
             }
 
             $providerStats[$providerName] += count($results);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Skip errors silently
         }
     }
-    echo "oa:" . $providerStats['openalex'] . " s2:" . $providerStats['s2'] . "\n";
+    echo 'oa:'.$providerStats['openalex'].' s2:'.$providerStats['s2']."\n";
 }
 
 echo "\n=== Search Complete ===\n";
-echo "Total documents: " . count($allDocuments) . "\n";
+echo 'Total documents: '.count($allDocuments)."\n";
 
 $exporter = new JsonExporter($outputDir);
 $searchFile = $exporter->exportDocuments($allDocuments, 'search_results', ['include_raw' => false]);
@@ -90,14 +90,13 @@ foreach ($clusters as $cluster) {
 }
 
 $dedupFile = $exporter->exportDocuments($dedupedDocs, 'deduped_results', ['include_raw' => false]);
-echo "After deduplication: " . count($dedupedDocs) . " unique documents\n";
+echo 'After deduplication: '.count($dedupedDocs)." unique documents\n";
 echo "Saved: deduped_results.json\n";
 
 echo "\n=== Selecting Seeds ===\n";
-usort($dedupedDocs, fn($a, $b) => ($b->citedByCount ?? 0) <=> ($a->citedByCount ?? 0));
+usort($dedupedDocs, fn ($a, $b) => ($b->citedByCount ?? 0) <=> ($a->citedByCount ?? 0));
 
-$seedsWithIds = array_filter($dedupedDocs, fn($doc) =>
-    $doc->externalIds->openalexId || $doc->externalIds->s2Id
+$seedsWithIds = array_filter($dedupedDocs, fn ($doc) => $doc->externalIds->openalexId || $doc->externalIds->s2Id
 );
 $topSeeds = array_slice($seedsWithIds, 0, 5);
 
@@ -105,7 +104,7 @@ echo "Top seeds:\n";
 foreach ($topSeeds as $i => $seed) {
     $title = substr($seed->title, 0, 60);
     $cites = $seed->citedByCount ?? 0;
-    echo "  " . ($i+1) . ". [{$cites} cites] {$title}...\n";
+    echo '  '.($i + 1).". [{$cites} cites] {$title}...\n";
 }
 
 $seedsFile = $exporter->exportDocuments($topSeeds, 'seeds', ['include_raw' => false]);
@@ -128,14 +127,16 @@ $allExistingDocs = $dedupedDocs;
 $snowballResults = [];
 
 foreach ($topSeeds as $i => $seed) {
-    if (!$seed->externalIds->openalexId && !$seed->externalIds->s2Id) continue;
-    
+    if (! $seed->externalIds->openalexId && ! $seed->externalIds->s2Id) {
+        continue;
+    }
+
     $title = substr($seed->title, 0, 40);
-    echo "Snowballing seed " . ($i+1) . " ({$title}...): ";
-    
+    echo 'Snowballing seed '.($i + 1)." ({$title}...): ";
+
     $newDocs = $snowballService->snowball($seed, $allExistingDocs);
-    echo count($newDocs) . " new\n";
-    
+    echo count($newDocs)." new\n";
+
     foreach ($newDocs as $doc) {
         $allExistingDocs[] = $doc;
     }
@@ -146,24 +147,24 @@ $uniqueSnowball = [];
 $snowballIds = [];
 foreach ($snowballResults as $doc) {
     $key = $doc->externalIds->doi ?? ($doc->externalIds->openalexId ?? ($doc->externalIds->s2Id ?? $doc->title));
-    if (!isset($snowballIds[$key])) {
+    if (! isset($snowballIds[$key])) {
         $snowballIds[$key] = true;
         $uniqueSnowball[] = $doc;
     }
 }
 
 echo "\n=== Results ===\n";
-echo "Original search: " . count($allDocuments) . " docs\n";
-echo "After dedup: " . count($dedupedDocs) . " docs\n";
-echo "New from snowball: " . count($uniqueSnowball) . " docs\n";
-echo "Total: " . (count($dedupedDocs) + count($uniqueSnowball)) . " docs\n";
+echo 'Original search: '.count($allDocuments)." docs\n";
+echo 'After dedup: '.count($dedupedDocs)." docs\n";
+echo 'New from snowball: '.count($uniqueSnowball)." docs\n";
+echo 'Total: '.(count($dedupedDocs) + count($uniqueSnowball))." docs\n";
 
-if (!empty($uniqueSnowball)) {
+if (! empty($uniqueSnowball)) {
     $snowballFile = $exporter->exportDocuments($uniqueSnowball, 'snowball_results', ['include_raw' => false]);
     echo "Saved: snowball_results.json\n";
 }
 
 echo "\n=== Files Created ===\n";
 foreach (glob("{$outputDir}/*.json") as $f) {
-    echo basename($f) . "\n";
+    echo basename($f)."\n";
 }

@@ -103,4 +103,54 @@ class PDFFetcher
     {
         return $this->outputDir;
     }
+
+    public function checkAvailability(Document $doc): bool
+    {
+        return $this->getPdfUrl($doc) !== null;
+    }
+
+    public function getPdfUrl(Document $doc): ?string
+    {
+        foreach ($this->sources as $source) {
+            try {
+                $url = $source->getPdfUrl($doc);
+                if ($url) {
+                    return $url;
+                }
+            } catch (\Exception $e) {
+                continue;
+            }
+        }
+
+        return null;
+    }
+
+    public function getAllPdfUrls(Document $doc): array
+    {
+        $urls = [];
+
+        foreach ($this->sources as $source) {
+            try {
+                $url = $source->getPdfUrl($doc);
+                if ($url) {
+                    $urls[$source->getName()] = $url;
+                }
+            } catch (\Exception $e) {
+                continue;
+            }
+        }
+
+        return $urls;
+    }
+
+    public function checkBatchAvailability(array $documents): array
+    {
+        $results = [];
+
+        foreach ($documents as $document) {
+            $results[$document->providerId] = $this->checkAvailability($document);
+        }
+
+        return $results;
+    }
 }

@@ -13,22 +13,32 @@ class OpenAlexSource extends BaseSource
 
     public function fetch(Document $doc, string $outputPath): bool
     {
-        $doi = $doc->externalIds->doi;
-        if (! $doi) {
+        $pdfUrl = $this->getPdfUrl($doc);
+        if (!$pdfUrl) {
             return false;
+        }
+
+        return $this->downloadFile($pdfUrl, $outputPath);
+    }
+
+    public function getPdfUrl(Document $doc): ?string
+    {
+        $doi = $doc->externalIds->doi;
+        if (!$doi) {
+            return null;
         }
 
         $url = "https://api.openalex.org/works/https://doi.org/{$doi}";
 
         if ($this->email) {
-            $url .= '?mailto='.urlencode($this->email);
+            $url .= '?mailto=' . urlencode($this->email);
         }
 
         try {
             $response = $this->client->get($url);
 
             if ($response->getStatusCode() !== 200) {
-                return false;
+                return null;
             }
 
             $data = json_decode($response->getBody()->getContents(), true);
@@ -36,18 +46,14 @@ class OpenAlexSource extends BaseSource
             $oaData = $data['open_access'] ?? [];
             $oaUrl = $oaData['oa_url'] ?? null;
 
-            if (! $oaUrl) {
+            if (!$oaUrl) {
                 $bestLocation = $data['best_oa_location'] ?? null;
                 $oaUrl = $bestLocation['pdf_url'] ?? null;
             }
 
-            if (! $oaUrl) {
-                return false;
-            }
-
-            return $this->downloadFile($oaUrl, $outputPath);
+            return $oaUrl;
         } catch (\Exception $e) {
-            return false;
+            return null;
         }
     }
 }

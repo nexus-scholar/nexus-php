@@ -13,15 +13,25 @@ class DirectSource extends BaseSource
 
     public function fetch(Document $doc, string $outputPath): bool
     {
-        if (!$doc->url) {
+        $url = $this->getPdfUrl($doc);
+        if (!$url) {
             return false;
+        }
+
+        return $this->downloadFile($url, $outputPath);
+    }
+
+    public function getPdfUrl(Document $doc): ?string
+    {
+        if (!$doc->url) {
+            return null;
         }
 
         $url = strtolower($doc->url);
         if (!str_ends_with($url, '.pdf')) {
-            return false;
+            return null;
         }
 
-        return $this->downloadFile($doc->url, $outputPath);
+        return $doc->url;
     }
 }

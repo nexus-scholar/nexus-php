@@ -14,9 +14,19 @@ class UnpaywallSource extends BaseSource
 
     public function fetch(Document $doc, string $outputPath): bool
     {
+        $pdfUrl = $this->getPdfUrl($doc);
+        if (!$pdfUrl) {
+            return false;
+        }
+
+        return $this->downloadFile($pdfUrl, $outputPath);
+    }
+
+    public function getPdfUrl(Document $doc): ?string
+    {
         $doi = $doc->externalIds->doi;
         if (!$doi) {
-            return false;
+            return null;
         }
 
         $email = $this->email ?? 'pdf@example.com';
@@ -26,25 +36,19 @@ class UnpaywallSource extends BaseSource
             $response = $this->client->get($url);
             
             if ($response->getStatusCode() !== 200) {
-                return false;
+                return null;
             }
 
             $data = json_decode($response->getBody()->getContents(), true);
             
             $bestLocation = $data['best_oa_location'] ?? null;
             if (!$bestLocation) {
-                return false;
+                return null;
             }
 
-            $pdfUrl = $bestLocation['url_for_pdf'] ?? $bestLocation['url'] ?? null;
-            
-            if (!$pdfUrl) {
-                return false;
-            }
-
-            return $this->downloadFile($pdfUrl, $outputPath);
+            return $bestLocation['url_for_pdf'] ?? $bestLocation['url'] ?? null;
         } catch (\Exception $e) {
-            return false;
+            return null;
         }
     }
 }
