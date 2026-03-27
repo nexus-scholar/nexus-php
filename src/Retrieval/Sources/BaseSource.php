@@ -18,9 +18,12 @@ abstract class BaseSource implements PDFSourceInterface
     public function __construct(
         protected ?string $email = null
     ) {
-        $this->client = new Client([
+        $options = [
             'timeout' => 30,
-        ]);
+            'verify' => dirname(__DIR__, 3) . '/cacert.pem',
+        ];
+
+        $this->client = new Client($options);
     }
 
     abstract public function getName(): string;
