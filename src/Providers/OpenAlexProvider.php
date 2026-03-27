@@ -234,4 +234,109 @@ class OpenAlexProvider extends BaseProvider
             return null;
         }
     }
+
+    public function getCitingWorks(string $openalexId, int $limit = 100): Generator
+    {
+        $params = [
+            'filter' => "cites:W{$openalexId}",
+            'per-page' => min(200, $limit),
+            'select' => 'id,doi,display_name,title,publication_year,publication_date,primary_location,authorships,cited_by_count,biblio,is_retracted,type,open_access,abstract_inverted_index',
+        ];
+
+        if ($this->config->mailto) {
+            $params['mailto'] = $this->config->mailto;
+        }
+
+        $totalRetrieved = 0;
+
+        while ($totalRetrieved < $limit) {
+            $response = $this->makeRequest(self::BASE_URL, $params);
+            
+            $results = $response['results'] ?? [];
+            if (empty($results)) {
+                break;
+            }
+
+            foreach ($results as $item) {
+                if ($totalRetrieved >= $limit) {
+                    return;
+                }
+
+                $doc = $this->normalizeResponse($item);
+                if ($doc) {
+                    yield $doc;
+                    $totalRetrieved++;
+                }
+            }
+
+            $nextCursor = $response['meta']['next_cursor'] ?? null;
+            if (!$nextCursor || $nextCursor === ($params['cursor'] ?? null)) {
+                break;
+            }
+
+            $params['cursor'] = $nextCursor;
+        }
+    }
+
+    public function getReferencedWorks(string $openalexId, int $limit = 50): Generator
+    {
+        $params = [
+            'filter' => "referenced_works:W{$openalexId}",
+            'per-page' => min(200, $limit),
+            'select' => 'id,doi,display_name,title,publication_year,publication_date,primary_location,authorships,cited_by_count,biblio,is_retracted,type,open_access,abstract_inverted_index',
+        ];
+
+        if ($this->config->mailto) {
+            $params['mailto'] = $this->config->mailto;
+        }
+
+        $totalRetrieved = 0;
+
+        while ($totalRetrieved < $limit) {
+            $response = $this->makeRequest(self::BASE_URL, $params);
+            
+            $results = $response['results'] ?? [];
+            if (empty($results)) {
+                break;
+            }
+
+            foreach ($results as $item) {
+                if ($totalRetrieved >= $limit) {
+                    return;
+                }
+
+                $doc = $this->normalizeResponse($item);
+                if ($doc) {
+                    yield $doc;
+                    $totalRetrieved++;
+                }
+            }
+
+            $nextCursor = $response['meta']['next_cursor'] ?? null;
+            if (!$nextCursor || $nextCursor === ($params['cursor'] ?? null)) {
+                break;
+            }
+
+            $params['cursor'] = $nextCursor;
+        }
+    }
+
+    public function getWorkById(string $id): ?Document
+    {
+        $params = [
+            'select' => 'id,doi,display_name,title,publication_year,publication_date,primary_location,authorships,cited_by_count,biblio,is_retracted,type,open_access,abstract_inverted_index,referenced_works,cited_by_count',
+        ];
+
+        if ($this->config->mailto) {
+            $params['mailto'] = $this->config->mailto;
+        }
+
+        try {
+            $url = self::BASE_URL . '/' . $id;
+            $response = $this->makeRequest($url, $params);
+            return $this->normalizeResponse($response);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
 }

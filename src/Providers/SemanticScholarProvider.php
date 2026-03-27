@@ -184,4 +184,118 @@ class SemanticScholarProvider extends BaseProvider
 
         return $authors;
     }
+
+    public function getCitingPapers(string $paperId, int $limit = 100): Generator
+    {
+        $fields = implode(',', self::FIELDS);
+        $url = "https://api.semanticscholar.org/graph/v1/paper/{$paperId}/citations";
+        $params = [
+            'fields' => $fields,
+            'limit' => min(100, $limit),
+        ];
+
+        $totalFetched = 0;
+
+        while ($totalFetched < $limit) {
+            if ($totalFetched > 0) {
+                $params['offset'] = $totalFetched;
+            }
+
+            try {
+                $response = $this->makeRequest($url, $params);
+                $data = $response['data'] ?? [];
+            } catch (\Exception $e) {
+                break;
+            }
+
+            if (empty($data)) {
+                break;
+            }
+
+            foreach ($data as $citation) {
+                if ($totalFetched >= $limit) {
+                    return;
+                }
+
+                $paper = $citation['citingPaper'] ?? null;
+                if (!$paper) {
+                    continue;
+                }
+
+                $doc = $this->normalizeResponse($paper);
+                if ($doc) {
+                    yield $doc;
+                    $totalFetched++;
+                }
+            }
+
+            if (count($data) < $params['limit']) {
+                break;
+            }
+        }
+    }
+
+    public function getReferences(string $paperId, int $limit = 50): Generator
+    {
+        $fields = implode(',', self::FIELDS);
+        $url = "https://api.semanticscholar.org/graph/v1/paper/{$paperId}/references";
+        $params = [
+            'fields' => $fields,
+            'limit' => min(100, $limit),
+        ];
+
+        $totalFetched = 0;
+
+        while ($totalFetched < $limit) {
+            if ($totalFetched > 0) {
+                $params['offset'] = $totalFetched;
+            }
+
+            try {
+                $response = $this->makeRequest($url, $params);
+                $data = $response['data'] ?? [];
+            } catch (\Exception $e) {
+                break;
+            }
+
+            if (empty($data)) {
+                break;
+            }
+
+            foreach ($data as $ref) {
+                if ($totalFetched >= $limit) {
+                    return;
+                }
+
+                $paper = $ref['citedPaper'] ?? null;
+                if (!$paper) {
+                    continue;
+                }
+
+                $doc = $this->normalizeResponse($paper);
+                if ($doc) {
+                    yield $doc;
+                    $totalFetched++;
+                }
+            }
+
+            if (count($data) < $params['limit']) {
+                break;
+            }
+        }
+    }
+
+    public function getPaperById(string $paperId): ?Document
+    {
+        $fields = implode(',', self::FIELDS);
+        $url = "https://api.semanticscholar.org/graph/v1/paper/{$paperId}";
+        $params = ['fields' => $fields];
+
+        try {
+            $response = $this->makeRequest($url, $params);
+            return $this->normalizeResponse($response);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
 }
