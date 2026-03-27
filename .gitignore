@@ -3,3 +3,4 @@
 /.phpunit.cache/
 /.env
 /.env.local
+/tests/fixtures/*.json

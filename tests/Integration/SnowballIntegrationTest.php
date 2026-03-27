@@ -76,18 +76,25 @@ class SnowballIntegrationTest extends TestCase
     public function test_run_queries_and_save_results(): void
     {
         $this->assertApiCallSucceeds(function () {
-            $service = new NexusService();
-            $service->registerProvider(ProviderFactory::makeFromConfig('openalex', $this->config));
-            $service->registerProvider(ProviderFactory::makeFromConfig('s2', $this->config));
+            $allResults = [];
 
+            $openalex = ProviderFactory::makeFromConfig('openalex', $this->config);
             $queries = [
-                new Query(text: 'machine learning', maxResults: 10, yearMin: 2023),
-                new Query(text: 'deep learning', maxResults: 10, yearMin: 2023),
+                new Query(text: 'attention transformer', maxResults: 5, yearMin: 2024),
+                new Query(text: 'BERT language model', maxResults: 5, yearMin: 2024),
             ];
 
-            $allResults = [];
             foreach ($queries as $query) {
-                $results = iterator_to_array($service->search($query));
+                $results = iterator_to_array($openalex->search($query));
+                foreach ($results as $doc) {
+                    $doc->queryText = $query->text;
+                }
+                $allResults = array_merge($allResults, $results);
+            }
+
+            $s2 = ProviderFactory::makeFromConfig('s2', $this->config);
+            foreach ($queries as $query) {
+                $results = iterator_to_array($s2->search($query));
                 foreach ($results as $doc) {
                     $doc->queryText = $query->text;
                 }
@@ -96,8 +103,8 @@ class SnowballIntegrationTest extends TestCase
 
             $this->assertNotEmpty($allResults, 'Should return results from at least one provider');
 
-            $exporter = new JsonExporter();
-            $outputFile = $exporter->exportDocuments($allResults, $this->fixturesDir . '/snowball_input.json', ['include_raw' => false]);
+            $exporter = new JsonExporter($this->fixturesDir);
+            $outputFile = $exporter->exportDocuments($allResults, 'snowball_input', ['include_raw' => false]);
 
             $this->assertFileExists($outputFile);
             echo "\nSaved " . count($allResults) . " documents to: " . $outputFile;
@@ -153,8 +160,8 @@ class SnowballIntegrationTest extends TestCase
             echo "\nFound " . count($uniqueNewDocs) . " unique new documents from snowballing";
 
             if (!empty($uniqueNewDocs)) {
-                $exporter = new JsonExporter();
-                $outputFile = $exporter->exportDocuments($uniqueNewDocs, $this->fixturesDir . '/snowball_output.json', ['include_raw' => false]);
+                $exporter = new JsonExporter($this->fixturesDir);
+                $outputFile = $exporter->exportDocuments($uniqueNewDocs, 'snowball_output', ['include_raw' => false]);
                 
                 $this->assertFileExists($outputFile);
                 echo "\nSaved snowball results to: " . $outputFile;
