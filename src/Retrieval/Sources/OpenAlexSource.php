@@ -13,19 +13,28 @@ class OpenAlexSource extends BaseSource
 
     public function fetch(Document $doc, string $outputPath): bool
     {
-        $pdfUrl = $this->getPdfUrl($doc);
-        if (!$pdfUrl) {
-            return false;
+        $pdfUrls = $this->getPdfUrls($doc);
+        
+        foreach ($pdfUrls as $url) {
+            if ($this->downloadFile($url, $outputPath)) {
+                return true;
+            }
         }
-
-        return $this->downloadFile($pdfUrl, $outputPath);
+        
+        return false;
     }
 
     public function getPdfUrl(Document $doc): ?string
     {
+        $urls = $this->getPdfUrls($doc);
+        return $urls[0] ?? null;
+    }
+
+    public function getPdfUrls(Document $doc): array
+    {
         $doi = $doc->externalIds->doi;
         if (!$doi) {
-            return null;
+            return [];
         }
 
         $url = "https://api.openalex.org/works/https://doi.org/{$doi}";
@@ -38,22 +47,41 @@ class OpenAlexSource extends BaseSource
             $response = $this->client->get($url);
 
             if ($response->getStatusCode() !== 200) {
-                return null;
+                return [];
             }
 
             $data = json_decode($response->getBody()->getContents(), true);
+            $pdfUrls = [];
 
-            $oaData = $data['open_access'] ?? [];
-            $oaUrl = $oaData['oa_url'] ?? null;
-
-            if (!$oaUrl) {
-                $bestLocation = $data['best_oa_location'] ?? null;
-                $oaUrl = $bestLocation['pdf_url'] ?? null;
+            $bestLocation = $data['best_oa_location'] ?? null;
+            if ($bestLocation) {
+                if (!empty($bestLocation['pdf_url'])) {
+                    $pdfUrls[] = $bestLocation['pdf_url'];
+                }
+                if (!empty($bestLocation['url_for_pdf'])) {
+                    $pdfUrls[] = $bestLocation['url_for_pdf'];
+                }
             }
 
-            return $oaUrl;
+            $locations = $data['locations'] ?? [];
+            foreach ($locations as $location) {
+                if (!empty($location['pdf_url'])) {
+                    $pdfUrl = $location['pdf_url'];
+                    if (!in_array($pdfUrl, $pdfUrls)) {
+                        $pdfUrls[] = $pdfUrl;
+                    }
+                }
+                if (!empty($location['url_for_pdf'])) {
+                    $urlForPdf = $location['url_for_pdf'];
+                    if (!in_array($urlForPdf, $pdfUrls)) {
+                        $pdfUrls[] = $urlForPdf;
+                    }
+                }
+            }
+
+            return $pdfUrls;
         } catch (\Exception $e) {
-            return null;
+            return [];
         }
     }
 }

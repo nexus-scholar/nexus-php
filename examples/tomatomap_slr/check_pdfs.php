@@ -6,26 +6,23 @@ use Nexus\Models\Document;
 use Nexus\Models\ExternalIds;
 use Nexus\Retrieval\PDFFetcher;
 use Nexus\Retrieval\Sources\ArxivSource;
-use Nexus\Retrieval\Sources\DirectSource;
-use Nexus\Retrieval\Sources\SemanticScholarSource;
-use Nexus\Retrieval\Sources\UnpaywallSource;
+use Nexus\Retrieval\Sources\OpenAlexSource;
 
-echo "=== PDF Retrieval - Maximum Yield Demo ===\n\n";
+echo "=== PDF Retrieval - Maximum Yield (Consolidated) ===\n\n";
 
 $pdfsDir = __DIR__ . '/pdfs';
 if (!is_dir($pdfsDir)) {
     mkdir($pdfsDir, 0755, true);
 }
 
-$fetcher = new PDFFetcher($pdfsDir, 'bekhouche.mouadh@univ-oeb.dz');
+$email = 'bekhouche.mouadh@univ-oeb.dz';
+$fetcher = new PDFFetcher($pdfsDir, $email);
 
 $inputFile = __DIR__ . '/deduped_results.json';
 $data = json_decode(file_get_contents($inputFile), true);
-echo "Loaded " . count($data) . " documents (deduped)\n\n";
+echo "Loaded " . count($data) . " documents\n\n";
 
 $documents = [];
-$stats = ['arxiv' => 0, 'doi' => 0, 'pubmed' => 0, 'none' => 0];
-
 foreach ($data as $item) {
     $externalIds = new ExternalIds(
         doi: $item['external_ids']['doi'] ?? null,
@@ -46,79 +43,50 @@ foreach ($data as $item) {
     );
 
     $documents[] = $doc;
-
-    if ($externalIds->arxivId) $stats['arxiv']++;
-    elseif ($externalIds->doi) $stats['doi']++;
-    elseif ($externalIds->pubmedId) $stats['pubmed']++;
-    else $stats['none']++;
 }
 
-echo "Documents breakdown:\n";
-echo "  arXiv: {$stats['arxiv']}\n";
-echo "  DOI only: {$stats['doi']}\n";
-echo "  PubMed: {$stats['pubmed']}\n";
-echo "  No IDs: {$stats['none']}\n\n";
+$arxivSource = new ArxivSource($email);
+$openalexSource = new OpenAlexSource($email);
 
-$arxivSource = new ArxivSource();
-$unpaywallSource = new UnpaywallSource('bekhouche.mouadh@univ-oeb.dz');
+$limit = 20;
+echo "=== Checking first {$limit} documents ===\n\n";
 
-echo "=== Checking Sources ===\n\n";
+$stats = ['arxiv' => 0, 'openalex' => 0, 'none' => 0];
 
-$results = [
-    'arxiv' => 0,
-    'unpaywall' => 0,
-    'direct' => 0,
-];
-
-foreach ($documents as $doc) {
-    if ($doc->externalIds->arxivId) {
-        if ($arxivSource->getPdfUrl($doc)) {
-            $results['arxiv']++;
-        }
-    }
+for ($i = 0; $i < min($limit, count($documents)); $i++) {
+    $doc = $documents[$i];
+    
+    $hasArxiv = $doc->externalIds->arxivId ? true : false;
+    $hasOpenalex = false;
     
     if ($doc->externalIds->doi) {
-        if ($unpaywallSource->getPdfUrl($doc)) {
-            $results['unpaywall']++;
-        }
+        $urls = $openalexSource->getPdfUrls($doc);
+        $hasOpenalex = !empty($urls);
     }
-}
-
-echo "arXiv available: {$results['arxiv']}\n";
-echo "Unpaywall available: {$results['unpaywall']}\n\n";
-
-echo "=== Downloading arXiv PDFs ===\n";
-$downloaded = 0;
-foreach ($documents as $doc) {
-    if ($doc->externalIds->arxivId) {
-        $path = $fetcher->fetch($doc);
-        if ($path) {
-            $downloaded++;
-            echo "✓ " . basename($path) . "\n";
-        }
-    }
-    if ($downloaded >= 50) break;
-}
-
-echo "\n=== Downloading from DOI (Unpaywall) ===\n";
-$doiDownloaded = 0;
-foreach ($documents as $doc) {
-    if (!$doc->externalIds->arxivId && $doc->externalIds->doi) {
-        $path = $fetcher->fetch($doc);
-        if ($path) {
-            $doiDownloaded++;
-            echo "✓ " . basename($path) . "\n";
-        }
-    }
-    if ($doiDownloaded >= 20) break;
+    
+    if ($hasArxiv) $stats['arxiv']++;
+    elseif ($hasOpenalex) $stats['openalex']++;
+    else $stats['none']++;
+    
+    $title = substr($doc->title, 0, 40);
+    echo "[{$i}] {$title}...\n";
+    echo "    arXiv: " . ($hasArxiv ? '✓' : '✗') . " | OpenAlex OA: " . ($hasOpenalex ? '✓' : '✗') . "\n";
 }
 
 echo "\n=== Summary ===\n";
-echo "arXiv PDFs: {$downloaded}\n";
-echo "DOI PDFs (Unpaywall): {$doiDownloaded}\n";
+echo "arXiv: {$stats['arxiv']}\n";
+echo "OpenAlex: {$stats['openalex']}\n";
+echo "Neither: {$stats['none']}\n\n";
 
-$files = glob("{$pdfsDir}/*.pdf");
-echo "\nTotal: " . count($files) . " PDFs\n";
+echo "=== Downloading ===\n";
+$downloaded = 0;
 
-$totalSize = array_sum(array_map('filesize', $files));
-echo "Size: " . round($totalSize / 1024 / 1024, 2) . " MB\n";
+foreach (array_slice($documents, 0, $limit) as $doc) {
+    $path = $fetcher->fetch($doc);
+    if ($path) {
+        $downloaded++;
+        echo "✓ " . basename($path) . "\n";
+    }
+}
+
+echo "\nTotal: {$downloaded} PDFs\n";

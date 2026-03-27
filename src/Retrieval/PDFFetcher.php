@@ -9,7 +9,6 @@ use Nexus\Retrieval\Sources\DirectSource;
 use Nexus\Retrieval\Sources\OpenAlexSource;
 use Nexus\Retrieval\Sources\SemanticScholarSource;
 use Nexus\Retrieval\Sources\PMCSource;
-use Nexus\Retrieval\Sources\UnpaywallSource;
 
 class PDFFetcher
 {
@@ -30,7 +29,6 @@ class PDFFetcher
         $defaultSources = [
             'direct' => true,
             'arxiv' => true,
-            'unpaywall' => true,
             'openalex' => true,
             'semantic_scholar' => true,
             'core' => true,
@@ -49,10 +47,6 @@ class PDFFetcher
 
         if ($sourcesToEnable['semantic_scholar'] ?? true) {
             $this->sources[] = new SemanticScholarSource($email);
-        }
-
-        if ($sourcesToEnable['unpaywall'] ?? true) {
-            $this->sources[] = new UnpaywallSource($email);
         }
 
         if ($sourcesToEnable['openalex'] ?? true) {
