@@ -4,8 +4,11 @@ namespace Nexus\Retrieval;
 
 use Nexus\Models\Document;
 use Nexus\Retrieval\Sources\ArxivSource;
+use Nexus\Retrieval\Sources\CORESource;
 use Nexus\Retrieval\Sources\DirectSource;
 use Nexus\Retrieval\Sources\OpenAlexSource;
+use Nexus\Retrieval\Sources\SemanticScholarSource;
+use Nexus\Retrieval\Sources\PMCSource;
 use Nexus\Retrieval\Sources\UnpaywallSource;
 
 class PDFFetcher
@@ -29,6 +32,9 @@ class PDFFetcher
             'arxiv' => true,
             'unpaywall' => true,
             'openalex' => true,
+            'semantic_scholar' => true,
+            'core' => true,
+            'pmc' => true,
         ];
 
         $sourcesToEnable = $enabledSources ?? $defaultSources;
@@ -41,12 +47,24 @@ class PDFFetcher
             $this->sources[] = new ArxivSource($email);
         }
 
+        if ($sourcesToEnable['semantic_scholar'] ?? true) {
+            $this->sources[] = new SemanticScholarSource($email);
+        }
+
         if ($sourcesToEnable['unpaywall'] ?? true) {
             $this->sources[] = new UnpaywallSource($email);
         }
 
         if ($sourcesToEnable['openalex'] ?? true) {
             $this->sources[] = new OpenAlexSource($email);
+        }
+
+        if ($sourcesToEnable['core'] ?? true) {
+            $this->sources[] = new CORESource($email);
+        }
+
+        if ($sourcesToEnable['pmc'] ?? true) {
+            $this->sources[] = new PMCSource($email);
         }
     }
 

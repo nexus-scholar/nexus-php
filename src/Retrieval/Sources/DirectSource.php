@@ -23,15 +23,18 @@ class DirectSource extends BaseSource
 
     public function getPdfUrl(Document $doc): ?string
     {
-        if (!$doc->url) {
-            return null;
+        if ($doc->url) {
+            $url = strtolower($doc->url);
+            if (str_ends_with($url, '.pdf')) {
+                return $doc->url;
+            }
         }
 
-        $url = strtolower($doc->url);
-        if (!str_ends_with($url, '.pdf')) {
-            return null;
+        if ($doc->externalIds->doi) {
+            $doiUrl = "https://doi.org/" . $doc->externalIds->doi;
+            return $doiUrl;
         }
 
-        return $doc->url;
+        return null;
     }
 }
