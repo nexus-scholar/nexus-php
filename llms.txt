@@ -1,0 +1,39 @@
+# nexus-php
+
+> A PHP 8.3+ library for systematic literature reviews (SLR). Searches OpenAlex,
+> Crossref, arXiv, Semantic Scholar, PubMed, DOAJ, and IEEE simultaneously.
+> Includes citation network analysis, deduplication, snowballing, PDF retrieval,
+> and first-class Laravel AI agent/tool support.
+
+## Docs
+
+- [README](README.md): Installation, feature overview, usage examples
+- [Snowballing](docs/snowballing.md): Forward/backward citation snowballing guide
+- [Citation Network Blueprint](docs/blueprint-citation-network.md): PageRank-based citation analysis
+- [Co-citation Analysis Blueprint](docs/blueprint-cocitation-analysis.md): CoCitation and bibliographic coupling
+- [Visualization Export Blueprint](docs/blueprint-visualization-export.md): GEXF/GraphML/Cytoscape.js export
+- [Prompts README](src/Prompts/README.md): AI prompt library for SLR workflows
+
+## Agent Skills
+
+- [AGENTS.md](AGENTS.md): Task playbook for AI coding agents
+- [.github/copilot-instructions.md](.github/copilot-instructions.md): GitHub Copilot / Cursor context
+- [nexus-skills/skills.json](nexus-skills/skills.json): Machine-readable skill manifest (12 skills)
+- [nexus-skills/discover.php](nexus-skills/discover.php): CLI skill discovery script
+
+## Key Source Files
+
+- [NexusService](src/Core/NexusService.php): Main search orchestrator
+- [BaseProvider](src/Providers/BaseProvider.php): Provider base class and HTTP client
+- [ProviderFactory](src/Core/ProviderFactory.php): Instantiate providers by name
+- [Document](src/Models/Document.php): Core data model
+- [ConservativeStrategy](src/Dedup/ConservativeStrategy.php): Union-Find fuzzy deduplication
+- [CitationGraphBuilder](src/CitationAnalysis/CitationGraphBuilder.php): Build citation graphs
+- [NetworkAnalyzer](src/CitationAnalysis/NetworkAnalyzer.php): PageRank, centrality, k-core
+- [PDFFetcher](src/Retrieval/PDFFetcher.php): Multi-source full-text PDF discovery
+- [ConfigLoader](src/Config/ConfigLoader.php): Load PHP/JSON/YAML configuration
+- [NexusServiceProvider](src/Laravel/NexusServiceProvider.php): Laravel integration entry point
+- [LiteratureSearchAgent](src/Laravel/Agents/LiteratureSearchAgent.php): Laravel AI agent
+- [LiteratureSearchTool](src/Laravel/Tools/LiteratureSearchTool.php): Laravel AI tool
+- [SearchCommand](src/Laravel/Commands/SearchCommand.php): `php artisan nexus:search`
+- [SkillsCommand](src/Laravel/Commands/SkillsCommand.php): `php artisan nexus:skills`
