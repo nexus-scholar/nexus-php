@@ -60,13 +60,14 @@ class NexusServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 SearchCommand::class,
+                SkillsCommand::class,
             ]);
         }
 
         $this->publishes([
             __DIR__ . '/../../config/nexus-laravel.php' => config_path('nexus.php'),
         ], 'nexus-config');
-
+    
         $this->registerEvents();
     }
 
