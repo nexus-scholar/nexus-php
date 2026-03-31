@@ -2,18 +2,17 @@
 
 namespace Nexus\Core;
 
-use Generator;
 use Nexus\Dedup\ConservativeStrategy;
 use Nexus\Dedup\DeduplicationStrategy;
 use Nexus\Models\DeduplicationConfig;
 use Nexus\Models\DeduplicationStrategyName;
 use Nexus\Models\Document;
-use Nexus\Models\DocumentCluster;
 use Nexus\Models\SnowballConfig;
 
 class SnowballService
 {
     private DeduplicationStrategy $dedupStrategy;
+
     /** @var SnowballProviderInterface[] */
     private array $providers;
 
@@ -59,7 +58,7 @@ class SnowballService
         }
 
         $clusters = $this->dedupStrategy->deduplicate($newDocuments);
-        
+
         $uniqueDocuments = $this->filterAgainstExisting($clusters, $allExisting);
 
         return $uniqueDocuments;
@@ -82,7 +81,7 @@ class SnowballService
             $allNewDocuments = array_merge($allNewDocuments, $newDocs);
         }
 
-        if ($currentDepth + 1 < $this->config->depth && !empty($allNewDocuments)) {
+        if ($currentDepth + 1 < $this->config->depth && ! empty($allNewDocuments)) {
             $recursiveDocs = $this->snowballMultiple($allNewDocuments, $allExisting, $currentDepth + 1);
             $allNewDocuments = array_merge($allNewDocuments, $recursiveDocs);
         }
@@ -93,13 +92,13 @@ class SnowballService
     private function filterAgainstExisting(array $clusters, array $existingDocuments): array
     {
         $existingIds = $this->buildIdSet($existingDocuments);
-        
+
         $uniqueDocuments = [];
-        
+
         foreach ($clusters as $cluster) {
             $doc = $cluster->representative;
-            
-            if (!$this->isDocumentInSet($doc, $existingIds)) {
+
+            if (! $this->isDocumentInSet($doc, $existingIds)) {
                 $uniqueDocuments[] = $doc;
             }
         }
