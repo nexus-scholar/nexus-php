@@ -8,4 +8,4 @@
 /examples/tomatomap_slr/pdfs/
 !/examples/tomatomap_slr/run_search.php
 !/examples/tomatomap_slr/check_pdfs.php
-composer.lock
+./composer.lock
