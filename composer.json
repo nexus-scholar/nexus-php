@@ -43,5 +43,27 @@
     "allow-plugins": {
       "pestphp/pest-plugin": true
     }
+  },
+  "extra": {
+    "nexus": {
+      "skills": "nexus-skills/skills.json",
+      "agent-instructions": ".github/copilot-instructions.md",
+      "agents": "AGENTS.md",
+      "llms-txt": "llms.txt"
+    },
+    "laravel": {
+      "providers": [
+        "Nexus\\Laravel\\NexusServiceProvider"
+      ]
+    }
+  },
+  "scripts": {
+    "nexus:skills": "@php nexus-skills/discover.php",
+    "post-install-cmd": [
+      "@php nexus-skills/discover.php || true"
+    ],
+    "post-update-cmd": [
+      "@php nexus-skills/discover.php || true"
+    ]
   }
 }
