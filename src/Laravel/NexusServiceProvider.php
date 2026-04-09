@@ -57,6 +57,7 @@ class NexusServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 SearchCommand::class,
+                SkillsCommand::class,
             ]);
         }
 
