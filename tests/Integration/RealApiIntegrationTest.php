@@ -45,6 +45,9 @@ class RealApiIntegrationTest extends TestCase
             if (str_contains($message, 'SSL') || str_contains($message, 'curl error')) {
                 $this->markTestSkipped('SSL certificate verification failed. Run: curl -L -o cacert.pem https://curl.se/ca/cacert.pem');
             }
+            if ($e->getCode() === 429 || str_contains($message, '429 Too Many Requests') || str_contains($message, 'rate limit')) {
+                $this->markTestSkipped('Rate limited by API (429). Skipping test.');
+            }
             if ($e->getCode() === 0) {
                 $this->markTestSkipped('Network connectivity issue: '.substr($message, 0, 200));
             }
