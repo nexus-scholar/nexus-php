@@ -5,14 +5,12 @@ namespace Nexus\Laravel;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\ServiceProvider;
 use Nexus\Core\NexusService;
-use Nexus\Laravel\Agents\LiteratureSearchAgent;
 use Nexus\Laravel\Commands\SearchCommand;
 use Nexus\Laravel\Commands\SkillsCommand;
 use Nexus\Laravel\Events\SearchCompleted;
 use Nexus\Laravel\Events\SearchStarted;
 use Nexus\Laravel\Listeners\LogSearchCompleted;
 use Nexus\Laravel\Listeners\LogSearchStarted;
-use Nexus\Laravel\Tools\LiteratureSearchTool;
 
 class NexusServiceProvider extends ServiceProvider
 {
@@ -41,14 +39,6 @@ class NexusServiceProvider extends ServiceProvider
 
         $this->app->bind(NexusSearcher::class, function ($app) {
             return $app->make('nexus.searcher');
-        });
-
-        $this->app->bind(LiteratureSearchTool::class, function ($app) {
-            return LiteratureSearchTool::make();
-        });
-
-        $this->app->bind(LiteratureSearchAgent::class, function ($app) {
-            return LiteratureSearchAgent::make();
         });
     }
 
