@@ -1,34 +1,24 @@
 <?php
 
-namespace Nexus\Tests\Providers;
-
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use Nexus\Models\ProviderConfig;
 use Nexus\Providers\PubMedProvider;
-use PHPUnit\Framework\TestCase;
 
-class PubMedProviderTest extends TestCase
+function createPubMedMockClient(array $responses): Client
 {
-    private function createMockClient(array $responses): Client
-    {
-        $mock = new MockHandler($responses);
-        $handlerStack = HandlerStack::create($mock);
+    $mock = new MockHandler($responses);
+    $handlerStack = HandlerStack::create($mock);
 
-        return new Client(['handler' => $handlerStack]);
-    }
-
-    public function test_provider_returns_correct_name(): void
-    {
-        $provider = new PubMedProvider(new ProviderConfig(name: 'pubmed'));
-        $this->assertEquals('pubmed', $provider->getName());
-    }
-
-    public function test_provider_requires_api_key_for_high_rate(): void
-    {
-        $config = new ProviderConfig(name: 'pubmed', rateLimit: 1.0);
-        $provider = new PubMedProvider($config);
-        $this->assertEquals('pubmed', $provider->getName());
-    }
+    return new Client(['handler' => $handlerStack]);
 }
+it('returns correct provider name', function () {
+    $provider = new PubMedProvider(new ProviderConfig(name: 'pubmed'));
+    expect($provider->getName())->toBe('pubmed');
+});
+it('requires api key for high rate', function () {
+    $config = new ProviderConfig(name: 'pubmed', rateLimit: 1.0);
+    $provider = new PubMedProvider($config);
+    expect($provider->getName())->toBe('pubmed');
+});
