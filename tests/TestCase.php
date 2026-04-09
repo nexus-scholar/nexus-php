@@ -2,9 +2,9 @@
 
 namespace Nexus\Tests;
 
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use PHPUnit\Framework\TestCase as BaseTestCase;
 
-abstract class TestCase extends BaseTestCase
+class TestCase extends BaseTestCase
 {
-    //
+    // Package-level base test case without Laravel app bootstrapping.
 }
