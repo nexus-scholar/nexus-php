@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PHP Version](https://img.shields.io/badge/PHP-%5E8.3-777bb4.svg)](https://www.php.net/)
 
-A PHP library for systematic literature reviews (SLR) that searches multiple academic databases simultaneously, performs citation network analysis, and retrieves full-text PDFs. This is a port of the [Nexus Research Engine](https://github.com/google/nexus-api) logic.
+A PHP library for systematic literature reviews (SLR) that searches multiple academic databases simultaneously, performs citation network analysis, and retrieves full-text PDFs.
 
 ## Features
 
