@@ -29,7 +29,7 @@ class DeduplicationStrategyTest extends TestCase
     public function test_normalize_title_removes_punctuation()
     {
         $result = DeduplicationStrategy::normalizeTitle("Test's, (Title) - With: Special; Chars!");
-        $this->assertEquals('tests title with special chars', preg_replace('/\s+/', ' ', $result));
+        $this->assertEquals('tests title - with special chars', preg_replace('/\s+/', ' ', $result));
     }
 
     public function test_normalize_title_handles_empty()

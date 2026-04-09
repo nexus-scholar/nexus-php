@@ -49,14 +49,14 @@ abstract class DeduplicationStrategy
         return strtolower(trim($doi));
     }
 
-    public function createCluster(int $clusterId, array $documents, ?Document $representative = null): DocumentCluster
+    public static function createCluster(int $clusterId, array $documents, ?Document $representative = null): DocumentCluster
     {
         if (empty($documents)) {
             throw new \InvalidArgumentException('Cannot create cluster with no documents');
         }
 
         if ($representative === null) {
-            $representative = $this->fuseDocuments($documents);
+            $representative = self::fuseDocuments($documents);
         }
 
         $allDois = [];
@@ -89,16 +89,25 @@ abstract class DeduplicationStrategy
         );
     }
 
-    protected function fuseDocuments(array $documents): Document
+    public static function fuseDocuments(array $documents): Document
     {
         if (count($documents) === 1) {
             return $documents[0];
         }
 
+        $providerPriority = [
+            'crossref' => 5,
+            'pubmed' => 4,
+            'openalex' => 3,
+            'semantic_scholar' => 2,
+            's2' => 2,
+            'arxiv' => 1,
+        ];
+
         $sorted = $documents;
-        usort($sorted, function (Document $a, Document $b) {
-            $scoreA = $this->getProviderPriority($a->provider);
-            $scoreB = $this->getProviderPriority($b->provider);
+        usort($sorted, function (Document $a, Document $b) use ($providerPriority) {
+            $scoreA = $providerPriority[strtolower($a->provider)] ?? 0;
+            $scoreB = $providerPriority[strtolower($b->provider)] ?? 0;
 
             if ($scoreA !== $scoreB) {
                 return $scoreB <=> $scoreA;
