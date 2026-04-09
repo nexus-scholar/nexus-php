@@ -11,7 +11,7 @@ class LiteratureSearchToolTest extends TestCase
 {
     public function test_tool_has_description(): void
     {
-        $tool = new LiteratureSearchTool();
+        $tool = new LiteratureSearchTool;
 
         $description = $tool->description();
 
@@ -22,7 +22,7 @@ class LiteratureSearchToolTest extends TestCase
 
     public function test_tool_can_set_custom_description(): void
     {
-        $tool = new LiteratureSearchTool();
+        $tool = new LiteratureSearchTool;
         $customDescription = 'Search for papers about machine learning';
 
         $result = $tool->withDescription($customDescription);
@@ -33,7 +33,7 @@ class LiteratureSearchToolTest extends TestCase
 
     public function test_tool_can_set_providers(): void
     {
-        $tool = new LiteratureSearchTool();
+        $tool = new LiteratureSearchTool;
         $providers = ['openalex', 'crossref'];
 
         $result = $tool->withProviders($providers);
@@ -43,7 +43,7 @@ class LiteratureSearchToolTest extends TestCase
 
     public function test_tool_can_set_abstract_flag(): void
     {
-        $tool = new LiteratureSearchTool();
+        $tool = new LiteratureSearchTool;
 
         $tool->withAbstract(false);
         $this->assertSame($tool, $tool->withAbstract(true));
@@ -51,7 +51,7 @@ class LiteratureSearchToolTest extends TestCase
 
     public function test_tool_can_set_authors_flag(): void
     {
-        $tool = new LiteratureSearchTool();
+        $tool = new LiteratureSearchTool;
 
         $tool->withAuthors(false);
         $this->assertSame($tool, $tool->withAuthors(true));
@@ -66,14 +66,14 @@ class LiteratureSearchToolTest extends TestCase
 
     public function test_tool_has_schema_definition(): void
     {
-        $tool = new LiteratureSearchTool();
+        $tool = new LiteratureSearchTool;
 
         $this->assertTrue(method_exists($tool, 'schema'));
     }
 
     public function test_tool_has_handle_method(): void
     {
-        $tool = new LiteratureSearchTool();
+        $tool = new LiteratureSearchTool;
 
         $this->assertTrue(method_exists($tool, 'handle'));
     }
@@ -86,11 +86,12 @@ class LiteratureSearchToolTest extends TestCase
                 year: 2024,
                 provider: 'test',
                 providerId: '123'
-            )
+            ),
         ];
 
         $tool = LiteratureSearchTool::make(function ($query, $providers) use ($customResults) {
             $this->assertInstanceOf(Query::class, $query);
+
             return $customResults;
         });
 

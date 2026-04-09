@@ -7,25 +7,25 @@ use PHPUnit\Framework\TestCase;
 
 class DateParserTest extends TestCase
 {
-    public function testExtractYearFromInt(): void
+    public function test_extract_year_from_int(): void
     {
         $this->assertEquals(2023, DateParser::extractYear(2023));
     }
 
-    public function testExtractYearFromString(): void
+    public function test_extract_year_from_string(): void
     {
         $this->assertEquals(2023, DateParser::extractYear('2023'));
         $this->assertEquals(2023, DateParser::extractYear('2023-05-15'));
         $this->assertEquals(2023, DateParser::extractYear('May 2023'));
     }
 
-    public function testExtractYearFromDict(): void
+    public function test_extract_year_from_dict(): void
     {
         $this->assertEquals(2023, DateParser::extractYear(['year' => 2023]));
         $this->assertEquals(2023, DateParser::extractYear(['Year' => 2023]));
     }
 
-    public function testExtractYearInvalid(): void
+    public function test_extract_year_invalid(): void
     {
         $this->assertNull(DateParser::extractYear(null));
         $this->assertNull(DateParser::extractYear('not a year'));
@@ -33,7 +33,7 @@ class DateParserTest extends TestCase
         $this->assertNull(DateParser::extractYear(2200));
     }
 
-    public function testParseDateYmd(): void
+    public function test_parse_date_ymd(): void
     {
         $date = DateParser::parseDate('2023-05-15');
 
@@ -43,7 +43,7 @@ class DateParserTest extends TestCase
         $this->assertEquals('15', $date->format('d'));
     }
 
-    public function testParseDateWithTime(): void
+    public function test_parse_date_with_time(): void
     {
         $date = DateParser::parseDate('2023-05-15T10:30:00');
 
@@ -52,7 +52,7 @@ class DateParserTest extends TestCase
         $this->assertEquals('30', $date->format('i'));
     }
 
-    public function testParseDateInvalid(): void
+    public function test_parse_date_invalid(): void
     {
         $this->assertNull(DateParser::parseDate(null));
         $this->assertNull(DateParser::parseDate('invalid'));

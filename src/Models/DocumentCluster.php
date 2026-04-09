@@ -23,7 +23,7 @@ class DocumentCluster
         return [
             'cluster_id' => $this->clusterId,
             'representative' => $this->representative->toArray(),
-            'members' => array_map(fn(Document $d) => $d->toArray(), $this->members),
+            'members' => array_map(fn (Document $d) => $d->toArray(), $this->members),
             'all_dois' => $this->allDois,
             'all_arxiv_ids' => $this->allArxivIds,
             'provider_counts' => $this->providerCounts,

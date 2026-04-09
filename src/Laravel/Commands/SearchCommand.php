@@ -3,7 +3,6 @@
 namespace Nexus\Laravel\Commands;
 
 use Illuminate\Console\Command;
-use Nexus\Laravel\NexusConfig;
 use Nexus\Laravel\NexusSearcher;
 use Nexus\Models\Query;
 
@@ -27,7 +26,7 @@ class SearchCommand extends Command
         $maxResults = (int) $this->option('max-results');
         $yearMin = $this->option('year-min') ? (int) $this->option('year-min') : null;
         $yearMax = $this->option('year-max') ? (int) $this->option('year-max') : null;
-        $useCache = !$this->option('no-cache');
+        $useCache = ! $this->option('no-cache');
         $format = $this->option('format');
 
         $query = new Query(
@@ -39,7 +38,7 @@ class SearchCommand extends Command
 
         $this->info("Searching for: {$queryText}");
         if ($providers) {
-            $this->info("Providers: " . implode(', ', $providers));
+            $this->info('Providers: '.implode(', ', $providers));
         }
         $this->newLine();
 
@@ -48,11 +47,12 @@ class SearchCommand extends Command
             $results = $searcher->search($query, $providers, $useCache);
             $duration = microtime(true) - $startTime;
 
-            $this->info("Found {$this->countResults($results)} results in " . round($duration, 2) . "s");
+            $this->info("Found {$this->countResults($results)} results in ".round($duration, 2).'s');
 
             $this->displayResults($results, $format);
         } catch (\Throwable $e) {
-            $this->error("Search failed: " . $e->getMessage());
+            $this->error('Search failed: '.$e->getMessage());
+
             return Command::FAILURE;
         }
 
@@ -67,7 +67,8 @@ class SearchCommand extends Command
     private function displayResults(array $results, string $format): void
     {
         if (empty($results)) {
-            $this->warn("No results found.");
+            $this->warn('No results found.');
+
             return;
         }
 
@@ -84,7 +85,7 @@ class SearchCommand extends Command
         foreach ($results as $result) {
             $rows[] = [
                 $result->provider ?? 'unknown',
-                substr($result->title ?? '', 0, 60) . (strlen($result->title ?? '') > 60 ? '...' : ''),
+                substr($result->title ?? '', 0, 60).(strlen($result->title ?? '') > 60 ? '...' : ''),
                 $result->year ?? 'N/A',
                 ($result->authors[0]->familyName ?? null) ?? 'N/A',
             ];
@@ -101,7 +102,7 @@ class SearchCommand extends Command
                 'title' => $result->title,
                 'year' => $result->year,
                 'provider' => $result->provider,
-                'authors' => array_map(fn($a) => $a->familyName ?? '', $result->authors ?? []),
+                'authors' => array_map(fn ($a) => $a->familyName ?? '', $result->authors ?? []),
                 'doi' => $result->externalIds->doi ?? null,
             ];
         }
@@ -110,9 +111,9 @@ class SearchCommand extends Command
 
     private function displayCsv(array $results): void
     {
-        $this->line("title,year,provider,authors,doi");
+        $this->line('title,year,provider,authors,doi');
         foreach ($results as $result) {
-            $authors = implode(';', array_map(fn($a) => $a->familyName ?? '', $result->authors ?? []));
+            $authors = implode(';', array_map(fn ($a) => $a->familyName ?? '', $result->authors ?? []));
             $doi = $result->externalIds->doi ?? '';
             $this->line("\"{$result->title}\",{$result->year},{$result->provider},\"{$authors}\",{$doi}");
         }

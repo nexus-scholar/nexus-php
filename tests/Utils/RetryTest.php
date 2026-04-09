@@ -2,14 +2,14 @@
 
 namespace Nexus\Tests\Utils;
 
-use Nexus\Utils\Retry;
 use Nexus\Utils\Exceptions\NetworkError;
 use Nexus\Utils\Exceptions\RateLimitError;
+use Nexus\Utils\Retry;
 use PHPUnit\Framework\TestCase;
 
 class RetryTest extends TestCase
 {
-    public function testSuccessfulOperation(): void
+    public function test_successful_operation(): void
     {
         $retry = new Retry(maxRetries: 3);
 
@@ -20,7 +20,7 @@ class RetryTest extends TestCase
         $this->assertEquals('success', $result);
     }
 
-    public function testRetriesOnNetworkError(): void
+    public function test_retries_on_network_error(): void
     {
         $retry = new Retry(maxRetries: 3, baseDelay: 0.01);
         $attempts = 0;
@@ -30,6 +30,7 @@ class RetryTest extends TestCase
             if ($attempts < 3) {
                 throw new NetworkError('test', 'Network error');
             }
+
             return 'success';
         });
 
@@ -37,7 +38,7 @@ class RetryTest extends TestCase
         $this->assertEquals(3, $attempts);
     }
 
-    public function testExhaustsRetries(): void
+    public function test_exhausts_retries(): void
     {
         $retry = new Retry(maxRetries: 2, baseDelay: 0.01);
 
@@ -48,7 +49,7 @@ class RetryTest extends TestCase
         });
     }
 
-    public function testDoesNotRetryNonConfiguredException(): void
+    public function test_does_not_retry_non_configured_exception(): void
     {
         $retry = new Retry(maxRetries: 3, exceptions: [RateLimitError::class]);
 
@@ -59,7 +60,7 @@ class RetryTest extends TestCase
         });
     }
 
-    public function testStaticFactoryOnRateLimit(): void
+    public function test_static_factory_on_rate_limit(): void
     {
         $retry = Retry::onRateLimit(maxRetries: 3);
 
@@ -70,15 +71,16 @@ class RetryTest extends TestCase
         $this->assertContains(RateLimitError::class, $retry->exceptions);
     }
 
-    public function testOnRetryCallbackIsCalled(): void
+    public function test_on_retry_callback_is_called(): void
     {
         $callbackCalled = false;
-        
+
         $retry = new Retry(
-            maxRetries: 3, 
-            baseDelay: 0.01, 
+            maxRetries: 3,
+            baseDelay: 0.01,
             onRetry: function ($e, $attempt) use (&$callbackCalled) {
                 $callbackCalled = true;
+
                 return [$e, $attempt];
             }
         );
@@ -90,6 +92,7 @@ class RetryTest extends TestCase
             if ($attempts < 3) {
                 throw new NetworkError('test', 'Error');
             }
+
             return 'success';
         });
 

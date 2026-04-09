@@ -1,6 +1,6 @@
 # Nexus PHP
 
-[![tests](https://github.com/nexus-scholar/nexus-php/actions/workflows/test.yml/badge.svg)](https://github.com/nexus-scholar/nexus-php/actions/workflows/test.yml)
+[![tests](https://github.com/nexus/nexus-php/actions/workflows/test.yml/badge.svg)](https://github.com/nexus/nexus-php/actions/workflows/test.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PHP Version](https://img.shields.io/badge/PHP-%5E8.3-777bb4.svg)](https://www.php.net/)
 

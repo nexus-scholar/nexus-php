@@ -2,16 +2,18 @@
 
 namespace Nexus\Providers;
 
+use Generator;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Nexus\Models\Document;
 use Nexus\Models\ProviderConfig;
 use Nexus\Models\Query;
-use Generator;
+use Psr\Http\Message\ResponseInterface;
 
 abstract class BaseProvider
 {
     protected Client $client;
+
     protected ?string $lastQuery = null;
 
     public function __construct(
@@ -27,7 +29,7 @@ abstract class BaseProvider
             'timeout' => $this->config->timeout,
         ];
 
-        $certPath = $this->findCACertPath();
+        $certPath = ini_get('curl.cainfo') ?: $this->findCACertPath();
         if ($certPath) {
             $options['verify'] = $certPath;
         }
@@ -38,9 +40,9 @@ abstract class BaseProvider
     private function findCACertPath(): ?string
     {
         $paths = [
-            __DIR__ . '/../../cacert.pem',
-            __DIR__ . '/../../../cacert.pem',
-            getcwd() . '/cacert.pem',
+            __DIR__.'/../../cacert.pem',
+            __DIR__.'/../../../cacert.pem',
+            getcwd().'/cacert.pem',
         ];
 
         foreach ($paths as $path) {
@@ -75,19 +77,27 @@ abstract class BaseProvider
     /**
      * @throws GuzzleException
      */
-    protected function makeRequest(string $url, array $params = [], array $headers = []): array
+    protected function makeRawRequest(string $url, array $params = [], array $headers = []): ResponseInterface
     {
         $queryString = http_build_query($params);
-        $this->lastQuery = $url . ($queryString ? '?' . $queryString : '');
+        $this->lastQuery = $url.($queryString ? '?'.$queryString : '');
 
         $defaultHeaders = [
-            'User-Agent' => 'NexusPHP/1.0' . ($this->config->mailto ? ' (' . $this->config->mailto . ')' : ''),
+            'User-Agent' => 'NexusPHP/1.0'.($this->config->mailto ? ' ('.$this->config->mailto.')' : ''),
         ];
 
-        $response = $this->client->get($url, [
+        return $this->client->get($url, [
             'query' => $params,
             'headers' => array_merge($defaultHeaders, $headers),
         ]);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    protected function makeRequest(string $url, array $params = [], array $headers = []): array
+    {
+        $response = $this->makeRawRequest($url, $params, $headers);
 
         return json_decode($response->getBody()->getContents(), true);
     }

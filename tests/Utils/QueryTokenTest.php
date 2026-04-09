@@ -40,7 +40,7 @@ class QueryTokenTest extends TestCase
     public function test_token_to_string()
     {
         $token = new QueryToken('test', QueryField::TITLE, isPhrase: true);
-        $str = (string)$token;
+        $str = (string) $token;
 
         $this->assertStringContainsString('QueryToken', $str);
         $this->assertStringContainsString('test', $str);

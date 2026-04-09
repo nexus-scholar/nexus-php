@@ -1,7 +1,6 @@
 {
   "name": "nexus/nexus-php",
   "description": "A PHP port of the Nexus Research Engine logic",
-  "version": "1.0.0",
   "type": "library",
   "license": "MIT",
   "authors": [
@@ -9,7 +8,7 @@
       "name": "Nexus Team"
     }
   ],
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
   "prefer-stable": true,
   "require": {
     "php": "^8.3",
@@ -20,14 +19,15 @@
     "illuminate/queue": "^11.0 || ^12.0 || ^13.0",
     "illuminate/events": "^11.0 || ^12.0 || ^13.0",
     "illuminate/cache": "^11.0 || ^12.0 || ^13.0",
-    "laravel/ai": "^0.3 || ^1.0",
-    "mbsoft31/graph-core": "^1.0",
-    "mbsoft31/graph-algorithms": "^1.0",
+    "laravel/ai": "*",
+    "mbsoft31/graph-core": "*",
+    "mbsoft31/graph-algorithms": "*",
     "ext-simplexml": "*"
   },
   "require-dev": {
     "pestphp/pest": "^3.0",
-    "laravel/pint": "^1.29"
+    "laravel/pint": "^1.29",
+    "phpstan/phpstan": "^2.1"
   },
   "autoload": {
     "psr-4": {

@@ -5,6 +5,7 @@ namespace Nexus\Utils;
 class UnionFind
 {
     private array $parent;
+
     private array $rank;
 
     public function __construct(int $n)
@@ -19,6 +20,7 @@ class UnionFind
             return $i;
         }
         $this->parent[$i] = $this->find($this->parent[$i]);
+
         return $this->parent[$i];
     }
 

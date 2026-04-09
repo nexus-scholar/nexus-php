@@ -35,7 +35,7 @@ class JsonlExporter extends BaseExporter
                     $jsonStr = json_encode($jsonObj, JSON_UNESCAPED_UNICODE);
                 }
 
-                $content .= $jsonStr . "\n";
+                $content .= $jsonStr."\n";
             }
 
             $this->writeToFile($path, $content);
@@ -61,19 +61,19 @@ class JsonlExporter extends BaseExporter
                 foreach ($clusters as $cluster) {
                     $jsonObj = $this->documentToDict($cluster->representative, $includeRaw);
                     $jsonObj['cluster_metadata'] = $this->clusterMetadataToDict($cluster);
-                    $content .= json_encode($jsonObj, JSON_UNESCAPED_UNICODE) . "\n";
+                    $content .= json_encode($jsonObj, JSON_UNESCAPED_UNICODE)."\n";
                 }
             } elseif ($mode === 'all') {
                 foreach ($clusters as $cluster) {
                     foreach ($cluster->members as $doc) {
                         $jsonObj = $this->documentToDict($doc, $includeRaw);
-                        $content .= json_encode($jsonObj, JSON_UNESCAPED_UNICODE) . "\n";
+                        $content .= json_encode($jsonObj, JSON_UNESCAPED_UNICODE)."\n";
                     }
                 }
             } elseif ($mode === 'clusters') {
                 foreach ($clusters as $cluster) {
                     $jsonObj = $this->clusterToDict($cluster, $includeRaw);
-                    $content .= json_encode($jsonObj, JSON_UNESCAPED_UNICODE) . "\n";
+                    $content .= json_encode($jsonObj, JSON_UNESCAPED_UNICODE)."\n";
                 }
             }
 
@@ -101,7 +101,7 @@ class JsonlExporter extends BaseExporter
             ],
             'abstract' => $doc->abstract,
             'authors' => array_map(
-                fn($author) => [
+                fn ($author) => [
                     'family_name' => $author->familyName,
                     'given_name' => $author->givenName,
                     'orcid' => $author->orcid,
@@ -133,7 +133,7 @@ class JsonlExporter extends BaseExporter
             'confidence' => $cluster->confidence ?? null,
             'representative' => $this->documentToDict($cluster->representative, $includeRaw),
             'members' => array_map(
-                fn($doc) => $this->documentToDict($doc, $includeRaw),
+                fn ($doc) => $this->documentToDict($doc, $includeRaw),
                 $cluster->members
             ),
             'all_dois' => $cluster->allDois,

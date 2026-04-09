@@ -8,6 +8,7 @@ use Nexus\Models\Document;
 class GexfExporter
 {
     private string $version;
+
     private string $creator;
 
     public function __construct(
@@ -29,7 +30,7 @@ class GexfExporter
 
         $docMap = $this->indexDocuments($documents);
 
-        $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><gexf xmlns="http://gexf.net/1.3" version="' . $this->version . '"></gexf>');
+        $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><gexf xmlns="http://gexf.net/1.3" version="'.$this->version.'"></gexf>');
         $xml->addAttribute('xmlns:viz', 'http://gexf.net/viz');
         $xml->addAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
         $xml->addAttribute('xsi:schemaLocation', 'http://gexf.net/1.3 http://gexf.net/1.3/gexf.xsd');
@@ -55,7 +56,7 @@ class GexfExporter
         foreach ($graph->nodes() as $nodeId) {
             $nodeAttrs = $graph->nodeAttrs($nodeId);
             $label = $nodeAttrs['label'] ?? $nodeId;
-            
+
             $nodeEl = $nodes->addChild('node');
             $nodeEl->addAttribute('id', $nodeId);
             $nodeEl->addAttribute('label', $label);
@@ -75,7 +76,7 @@ class GexfExporter
             $edgeEl->addAttribute('id', (string) $index);
             $edgeEl->addAttribute('source', $edge->from);
             $edgeEl->addAttribute('target', $edge->to);
-            
+
             $weight = $edge->attributes['weight'] ?? $edge->attributes['weight'] ?? 1.0;
             $edgeEl->addAttribute('weight', (string) $weight);
 
@@ -175,9 +176,9 @@ class GexfExporter
     private function getNodeId(Document $document): string
     {
         if ($document->externalIds?->doi) {
-            return 'doi:' . $document->externalIds->doi;
+            return 'doi:'.$document->externalIds->doi;
         }
 
-        return 'id:' . $document->providerId;
+        return 'id:'.$document->providerId;
     }
 }

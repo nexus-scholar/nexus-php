@@ -56,7 +56,7 @@ class UnionFindTest extends TestCase
 
         $uf->union(0, 1);
         $root1 = $uf->find(0);
-        
+
         $uf->union(0, 1);
         $root2 = $uf->find(0);
 

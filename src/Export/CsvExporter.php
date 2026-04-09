@@ -28,7 +28,7 @@ class CsvExporter extends BaseExporter
         try {
             $file = new SplFileObject($path, 'w');
 
-            if (!empty($documents)) {
+            if (! empty($documents)) {
                 $fieldnames = $this->getFieldnames($documents[0], $includeRaw);
                 $file->fputcsv($fieldnames, ',', '"', '\\');
 

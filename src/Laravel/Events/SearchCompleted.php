@@ -3,9 +3,9 @@
 namespace Nexus\Laravel\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 use Nexus\Models\Document;
 use Nexus\Models\Query;
-use Illuminate\Queue\SerializesModels;
 
 class SearchCompleted
 {
@@ -32,6 +32,7 @@ class SearchCompleted
                 $providers[$result->provider] = true;
             }
         }
+
         return array_keys($providers);
     }
 }

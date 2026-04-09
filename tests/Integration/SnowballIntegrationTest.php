@@ -2,41 +2,44 @@
 
 namespace Nexus\Tests\Integration;
 
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\RequestException;
 use Nexus\Config\ConfigLoader;
 use Nexus\Config\NexusConfig;
-use Nexus\Core\NexusService;
 use Nexus\Core\ProviderFactory;
 use Nexus\Core\SnowballService;
 use Nexus\Dedup\ConservativeStrategy;
+use Nexus\Export\JsonExporter;
 use Nexus\Models\DeduplicationConfig;
 use Nexus\Models\DeduplicationStrategyName;
 use Nexus\Models\Document;
+use Nexus\Models\ExternalIds;
 use Nexus\Models\Query;
 use Nexus\Models\SnowballConfig;
-use Nexus\Export\JsonExporter;
 use PHPUnit\Framework\TestCase;
 
 class SnowballIntegrationTest extends TestCase
 {
     private NexusConfig $config;
+
     private string $fixturesDir;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->config = ConfigLoader::loadDefault();
-        $this->fixturesDir = __DIR__ . '/../fixtures';
+        $this->fixturesDir = __DIR__.'/../fixtures';
         $this->ensureSSLCertificates();
     }
 
     private function ensureSSLCertificates(): void
     {
-        $certPath = __DIR__ . '/../../cacert.pem';
+        $certPath = __DIR__.'/../../cacert.pem';
         if (file_exists($certPath)) {
-            if (!ini_get('curl.cainfo')) {
+            if (! ini_get('curl.cainfo')) {
                 ini_set('curl.cainfo', $certPath);
             }
-            if (!ini_get('openssl.cafile')) {
+            if (! ini_get('openssl.cafile')) {
                 ini_set('openssl.cafile', $certPath);
             }
         }
@@ -46,16 +49,16 @@ class SnowballIntegrationTest extends TestCase
     {
         try {
             $test();
-        } catch (\GuzzleHttp\Exception\RequestException $e) {
+        } catch (RequestException $e) {
             $message = $e->getMessage();
             if (str_contains($message, 'SSL') || str_contains($message, 'curl error')) {
                 $this->markTestSkipped('SSL certificate verification failed. Run: curl -L -o cacert.pem https://curl.se/ca/cacert.pem');
             }
             if ($e->getCode() === 0) {
-                $this->markTestSkipped('Network connectivity issue: ' . substr($message, 0, 200));
+                $this->markTestSkipped('Network connectivity issue: '.substr($message, 0, 200));
             }
             throw $e;
-        } catch (\GuzzleHttp\Exception\ConnectException $e) {
+        } catch (ConnectException $e) {
             $message = $e->getMessage();
             if (str_contains($message, 'SSL') || str_contains($message, 'curl error')) {
                 $this->markTestSkipped('SSL certificate verification failed. Run: curl -L -o cacert.pem https://curl.se/ca/cacert.pem');
@@ -67,7 +70,7 @@ class SnowballIntegrationTest extends TestCase
                 $this->markTestSkipped('SSL certificate verification failed. Run: curl -L -o cacert.pem https://curl.se/ca/cacert.pem');
             }
             if (str_contains($message, 'API key')) {
-                $this->markTestSkipped('API key not configured: ' . $message);
+                $this->markTestSkipped('API key not configured: '.$message);
             }
             throw $e;
         }
@@ -116,9 +119,9 @@ class SnowballIntegrationTest extends TestCase
     public function test_select_document_and_snowball(): void
     {
         $this->assertApiCallSucceeds(function () {
-            $inputFile = $this->fixturesDir . '/snowball_input.json';
-            
-            if (!file_exists($inputFile)) {
+            $inputFile = $this->fixturesDir.'/snowball_input.json';
+
+            if (! file_exists($inputFile)) {
                 $this->markTestSkipped('Run test_run_queries_and_save_results first to create the input file');
             }
 
@@ -151,10 +154,10 @@ class SnowballIntegrationTest extends TestCase
 
             $uniqueNewDocs = $snowballService->snowball($seedDocument, $documents);
 
-            if (!empty($uniqueNewDocs)) {
+            if (! empty($uniqueNewDocs)) {
                 $exporter = new JsonExporter($this->fixturesDir);
                 $outputFile = $exporter->exportDocuments($uniqueNewDocs, 'snowball_output', ['include_raw' => false]);
-                
+
                 $this->assertFileExists($outputFile);
             }
 
@@ -165,10 +168,10 @@ class SnowballIntegrationTest extends TestCase
     public function test_snowball_deduplication_against_existing(): void
     {
         $this->assertApiCallSucceeds(function () {
-            $inputFile = $this->fixturesDir . '/snowball_input.json';
-            $outputFile = $this->fixturesDir . '/snowball_output.json';
-            
-            if (!file_exists($inputFile)) {
+            $inputFile = $this->fixturesDir.'/snowball_input.json';
+            $outputFile = $this->fixturesDir.'/snowball_output.json';
+
+            if (! file_exists($inputFile)) {
                 $this->markTestSkipped('Run test_run_queries_and_save_results first');
             }
 
@@ -202,7 +205,7 @@ class SnowballIntegrationTest extends TestCase
 
     private function arrayToDocument(array $data): Document
     {
-        $externalIds = new \Nexus\Models\ExternalIds(
+        $externalIds = new ExternalIds(
             doi: $data['external_ids']['doi'] ?? null,
             arxivId: $data['external_ids']['arxiv_id'] ?? null,
             pubmedId: $data['external_ids']['pubmed_id'] ?? null,

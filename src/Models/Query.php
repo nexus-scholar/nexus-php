@@ -14,7 +14,7 @@ class Query
         public int $offset = 0,
         public array $metadata = []
     ) {
-        $this->id = $id ?? 'Q' . substr(uniqid(), -5);
+        $this->id = $id ?? 'Q'.substr(uniqid(), -5);
     }
 
     public function toArray(): array

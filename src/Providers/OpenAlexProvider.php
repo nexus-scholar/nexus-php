@@ -3,24 +3,27 @@
 namespace Nexus\Providers;
 
 use Generator;
+use GuzzleHttp\Client;
+use Nexus\Core\SnowballProviderInterface;
 use Nexus\Models\Author;
 use Nexus\Models\Document;
 use Nexus\Models\ExternalIds;
+use Nexus\Models\ProviderConfig;
 use Nexus\Models\Query;
 use Nexus\Models\QueryField;
 use Nexus\Utils\BooleanQueryTranslator;
 use Nexus\Utils\FieldExtractor;
-use Nexus\Core\SnowballProviderInterface;
 
 class OpenAlexProvider extends BaseProvider implements SnowballProviderInterface
 {
     private const BASE_URL = 'https://api.openalex.org/works';
+
     private BooleanQueryTranslator $translator;
 
-    public function __construct($config, $client = null)
+    public function __construct(ProviderConfig $config, ?Client $client = null)
     {
         parent::__construct($config, $client);
-        
+
         $fieldMap = [
             QueryField::TITLE->value => 'title',
             QueryField::ABSTRACT->value => 'abstract',
@@ -29,7 +32,7 @@ class OpenAlexProvider extends BaseProvider implements SnowballProviderInterface
             QueryField::YEAR->value => 'publication_year',
             QueryField::DOI->value => 'doi',
         ];
-        
+
         $this->translator = new BooleanQueryTranslator($fieldMap);
     }
 
@@ -46,7 +49,7 @@ class OpenAlexProvider extends BaseProvider implements SnowballProviderInterface
 
         while ($totalRetrieved < $maxResults) {
             $response = $this->makeRequest(self::BASE_URL, $params);
-            
+
             $results = $response['results'] ?? [];
             if (empty($results)) {
                 break;
@@ -58,7 +61,7 @@ class OpenAlexProvider extends BaseProvider implements SnowballProviderInterface
                 }
 
                 $doc = $this->normalizeResponse($item);
-                if ($doc && !isset($seenIds[$doc->providerId])) {
+                if ($doc && ! isset($seenIds[$doc->providerId])) {
                     $doc->queryId = $query->id;
                     $doc->queryText = $query->text;
                     yield $doc;
@@ -68,7 +71,7 @@ class OpenAlexProvider extends BaseProvider implements SnowballProviderInterface
             }
 
             $nextCursor = $response['meta']['next_cursor'] ?? null;
-            if (!$nextCursor || $nextCursor === ($params['cursor'] ?? null)) {
+            if (! $nextCursor || $nextCursor === ($params['cursor'] ?? null)) {
                 break;
             }
 
@@ -86,7 +89,7 @@ class OpenAlexProvider extends BaseProvider implements SnowballProviderInterface
         $filters = [];
         if ($query->yearMin || $query->yearMax) {
             $yearMin = $query->yearMin ?? 1900;
-            $yearMax = $query->yearMax ?? (int)date('Y');
+            $yearMax = $query->yearMax ?? (int) date('Y');
             $filters[] = "publication_year:{$yearMin}-{$yearMax}";
         }
 
@@ -94,9 +97,12 @@ class OpenAlexProvider extends BaseProvider implements SnowballProviderInterface
             $filters[] = "language:{$query->language}";
         }
 
-        $filters[] = "type:article|review";
+        $types = $query->metadata['types'] ?? [];
+        if (! empty($types)) {
+            $filters[] = 'type:'.implode('|', (array) $types);
+        }
 
-        if (!empty($filters)) {
+        if (! empty($filters)) {
             $params['filter'] = implode(',', $filters);
         }
 
@@ -111,9 +117,9 @@ class OpenAlexProvider extends BaseProvider implements SnowballProviderInterface
     {
         try {
             $extractor = new FieldExtractor($raw);
-            
+
             $title = $extractor->getString('display_name') ?: $extractor->getString('title');
-            if (!$title) {
+            if (! $title) {
                 return null;
             }
 
@@ -122,7 +128,7 @@ class OpenAlexProvider extends BaseProvider implements SnowballProviderInterface
             $externalIds = $this->extractIds($raw);
             $abstract = $this->extractAbstract($raw);
             $venue = $extractor->getString('primary_location.source.display_name');
-            
+
             $openalexId = $extractor->getString('id');
             if (str_contains($openalexId, 'openalex.org/')) {
                 $parts = explode('/', $openalexId);
@@ -215,7 +221,7 @@ class OpenAlexProvider extends BaseProvider implements SnowballProviderInterface
     private function extractAbstract(array $raw): ?string
     {
         $invertedIndex = $raw['abstract_inverted_index'] ?? null;
-        if (!$invertedIndex) {
+        if (! $invertedIndex) {
             return null;
         }
 
@@ -252,7 +258,7 @@ class OpenAlexProvider extends BaseProvider implements SnowballProviderInterface
 
         while ($totalRetrieved < $limit) {
             $response = $this->makeRequest(self::BASE_URL, $params);
-            
+
             $results = $response['results'] ?? [];
             if (empty($results)) {
                 break;
@@ -271,7 +277,7 @@ class OpenAlexProvider extends BaseProvider implements SnowballProviderInterface
             }
 
             $nextCursor = $response['meta']['next_cursor'] ?? null;
-            if (!$nextCursor || $nextCursor === ($params['cursor'] ?? null)) {
+            if (! $nextCursor || $nextCursor === ($params['cursor'] ?? null)) {
                 break;
             }
 
@@ -295,7 +301,7 @@ class OpenAlexProvider extends BaseProvider implements SnowballProviderInterface
 
         while ($totalRetrieved < $limit) {
             $response = $this->makeRequest(self::BASE_URL, $params);
-            
+
             $results = $response['results'] ?? [];
             if (empty($results)) {
                 break;
@@ -314,7 +320,7 @@ class OpenAlexProvider extends BaseProvider implements SnowballProviderInterface
             }
 
             $nextCursor = $response['meta']['next_cursor'] ?? null;
-            if (!$nextCursor || $nextCursor === ($params['cursor'] ?? null)) {
+            if (! $nextCursor || $nextCursor === ($params['cursor'] ?? null)) {
                 break;
             }
 
@@ -349,8 +355,9 @@ class OpenAlexProvider extends BaseProvider implements SnowballProviderInterface
         }
 
         try {
-            $url = self::BASE_URL . '/' . $id;
+            $url = self::BASE_URL.'/'.$id;
             $response = $this->makeRequest($url, $params);
+
             return $this->normalizeResponse($response);
         } catch (\Exception $e) {
             return null;

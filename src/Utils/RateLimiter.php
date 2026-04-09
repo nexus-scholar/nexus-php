@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Nexus\Utils;
 
-use SplFileObject;
-
 class RateLimiter
 {
     protected float $tokens;
+
     protected float $lastUpdate;
+
     protected object $lock;
 
     public function __construct(
@@ -25,7 +25,7 @@ class RateLimiter
 
         $this->tokens = (float) $capacity;
         $this->lastUpdate = microtime(true);
-        $this->lock = new \stdClass();
+        $this->lock = new \stdClass;
     }
 
     public function consume(int $tokens = 1): bool
@@ -87,6 +87,7 @@ class RateLimiter
     public function availableTokens(): float
     {
         $this->refill();
+
         return $this->tokens;
     }
 
@@ -97,6 +98,7 @@ class RateLimiter
         if ($deficit <= 0) {
             return 0.0;
         }
+
         return $deficit / $this->rate;
     }
 }

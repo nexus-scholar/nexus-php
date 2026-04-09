@@ -13,7 +13,8 @@ use SimpleXMLElement;
 
 class ArxivProvider extends BaseProvider
 {
-    private const BASE_URL = 'https://export.arxiv.org/api/query';
+    private const string BASE_URL = 'https://export.arxiv.org/api/query';
+
     private BooleanQueryTranslator $translator;
 
     public function __construct($config, $client = null)
@@ -45,7 +46,7 @@ class ArxivProvider extends BaseProvider
             $params['start'] = $start;
             $params['max_results'] = $maxResultsPerPage;
 
-            $response = $this->client->get(self::BASE_URL, ['query' => $params]);
+            $response = $this->makeRawRequest(self::BASE_URL, $params);
             $xmlContent = $response->getBody()->getContents();
 
             try {
@@ -103,6 +104,7 @@ class ArxivProvider extends BaseProvider
     protected function translateQuery(Query $query): array
     {
         $translation = $this->translator->translate($query);
+
         return [
             'search_query' => $translation['q'],
             'sortBy' => 'submittedDate',
@@ -113,12 +115,12 @@ class ArxivProvider extends BaseProvider
     protected function normalizeResponse(mixed $raw): ?Document
     {
         $entry = $raw['entry'] ?? null;
-        if (!($entry instanceof SimpleXMLElement)) {
+        if (! ($entry instanceof SimpleXMLElement)) {
             return null;
         }
 
         $title = $this->xpathString($entry, 'atom:title');
-        if (!$title) {
+        if (! $title) {
             return null;
         }
 
@@ -134,7 +136,7 @@ class ArxivProvider extends BaseProvider
         $authors = $this->parseAuthors($entry);
 
         $primaryCategory = $this->xpathAttribute($entry, 'arxiv:primary_category', 'term');
-        $venue = $primaryCategory ? "arXiv ($primaryCategory)" : "arXiv";
+        $venue = $primaryCategory ? "arXiv ($primaryCategory)" : 'arXiv';
 
         $externalIds = new ExternalIds(
             doi: $doi,
@@ -158,7 +160,7 @@ class ArxivProvider extends BaseProvider
     private function xpathString(SimpleXMLElement $xml, string $path): ?string
     {
         $result = $xml->xpath($path);
-        if ($result === false || !isset($result[0])) {
+        if ($result === false || ! isset($result[0])) {
             return null;
         }
 
@@ -170,12 +172,12 @@ class ArxivProvider extends BaseProvider
     private function xpathAttribute(SimpleXMLElement $xml, string $path, string $attr): ?string
     {
         $result = $xml->xpath($path);
-        if ($result === false || !isset($result[0])) {
+        if ($result === false || ! isset($result[0])) {
             return null;
         }
 
         $element = $result[0];
-        if (!is_object($element)) {
+        if (! is_object($element)) {
             return null;
         }
 
@@ -189,12 +191,12 @@ class ArxivProvider extends BaseProvider
         $authors = [];
         $authorNodes = $entry->xpath('atom:author');
 
-        if (!is_array($authorNodes)) {
+        if (! is_array($authorNodes)) {
             return $authors;
         }
 
         foreach ($authorNodes as $authorNode) {
-            if (!$authorNode instanceof SimpleXMLElement) {
+            if (! $authorNode instanceof SimpleXMLElement) {
                 continue;
             }
 
@@ -202,13 +204,13 @@ class ArxivProvider extends BaseProvider
             $authorNode->registerXPathNamespace('arxiv', 'http://arxiv.org/schemas/atom');
 
             $nameResult = $authorNode->xpath('atom:name');
-            if (!is_array($nameResult) || !isset($nameResult[0])) {
+            if (! is_array($nameResult) || ! isset($nameResult[0])) {
                 continue;
             }
 
             $nameValue = (string) $nameResult[0];
             $name = $nameValue !== '' ? trim($nameValue) : '';
-            if (!$name) {
+            if (! $name) {
                 continue;
             }
 
@@ -229,7 +231,7 @@ class ArxivProvider extends BaseProvider
 
     private function extractYear(?string $dateStr): ?int
     {
-        if (!$dateStr) {
+        if (! $dateStr) {
             return null;
         }
 
@@ -240,7 +242,7 @@ class ArxivProvider extends BaseProvider
 
     private function extractArxivId(?string $idUrl): ?string
     {
-        if (!$idUrl) {
+        if (! $idUrl) {
             return null;
         }
 

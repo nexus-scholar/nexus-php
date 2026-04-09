@@ -14,6 +14,7 @@ use Nexus\Utils\FieldExtractor;
 class CrossrefProvider extends BaseProvider
 {
     private const BASE_URL = 'https://api.crossref.org/works';
+
     private const ALLOWED_TYPES = [
         'journal-article',
         'proceedings-article',
@@ -27,7 +28,7 @@ class CrossrefProvider extends BaseProvider
     public function __construct($config, $client = null)
     {
         parent::__construct($config, $client);
-        
+
         $fieldMap = [
             QueryField::TITLE->value => 'title',
             QueryField::ABSTRACT->value => 'abstract',
@@ -36,7 +37,7 @@ class CrossrefProvider extends BaseProvider
             QueryField::YEAR->value => 'issued',
             QueryField::DOI->value => 'DOI',
         ];
-        
+
         $this->translator = new BooleanQueryTranslator($fieldMap);
     }
 
@@ -51,7 +52,7 @@ class CrossrefProvider extends BaseProvider
         while ($totalFetched < $maxResults) {
             $params['cursor'] = $cursor;
             $response = $this->makeRequest(self::BASE_URL, $params);
-            
+
             $message = $response['message'] ?? [];
             $items = $message['items'] ?? [];
             $cursor = $message['next-cursor'] ?? null;
@@ -85,7 +86,7 @@ class CrossrefProvider extends BaseProvider
                 $totalFetched++;
             }
 
-            if (!$cursor || $cursor === ($params['cursor'] ?? null)) {
+            if (! $cursor || $cursor === ($params['cursor'] ?? null)) {
                 break;
             }
         }
@@ -111,7 +112,7 @@ class CrossrefProvider extends BaseProvider
             $filters[] = "type:$type";
         }
 
-        if (!empty($filters)) {
+        if (! empty($filters)) {
             $params['filter'] = implode(',', $filters);
         }
 
@@ -128,7 +129,7 @@ class CrossrefProvider extends BaseProvider
         $titles = $extractor->getList('title');
         $title = $titles[0] ?? null;
 
-        if (!$title) {
+        if (! $title) {
             return null;
         }
 
@@ -136,10 +137,10 @@ class CrossrefProvider extends BaseProvider
         $doi = $extractor->getString('DOI');
         $authors = $this->parseAuthors($raw);
         $abstract = $extractor->getString('abstract');
-        
+
         $containerTitles = $extractor->getList('container-title');
         $venue = $containerTitles[0] ?? null;
-        
+
         $url = $extractor->getString('URL');
         $citations = $extractor->getInt('is-referenced-by-count');
 
@@ -164,9 +165,10 @@ class CrossrefProvider extends BaseProvider
     {
         $issued = $raw['issued'] ?? [];
         $dateParts = $issued['date-parts'] ?? [];
-        if (!empty($dateParts) && is_array($dateParts[0])) {
-            return (int)$dateParts[0][0];
+        if (! empty($dateParts) && is_array($dateParts[0])) {
+            return (int) $dateParts[0][0];
         }
+
         return null;
     }
 
@@ -177,7 +179,7 @@ class CrossrefProvider extends BaseProvider
         $authors = [];
 
         foreach ($authorsData as $authorDict) {
-            if (!is_array($authorDict)) {
+            if (! is_array($authorDict)) {
                 continue;
             }
 

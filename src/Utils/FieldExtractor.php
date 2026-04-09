@@ -18,7 +18,7 @@ class FieldExtractor
 
             if (is_array($current)) {
                 if (is_numeric($part)) {
-                    $idx = (int)$part;
+                    $idx = (int) $part;
                     $current = $current[$idx] ?? $default;
                 } else {
                     $current = $current[$part] ?? $default;
@@ -34,7 +34,8 @@ class FieldExtractor
     public function getString(string $path, string $default = ''): string
     {
         $value = $this->get($path, $default);
-        return $value !== null ? trim((string)$value) : $default;
+
+        return $value !== null ? trim((string) $value) : $default;
     }
 
     public function getInt(string $path, ?int $default = null): ?int
@@ -44,12 +45,13 @@ class FieldExtractor
             return $default;
         }
 
-        return is_numeric($value) ? (int)$value : $default;
+        return is_numeric($value) ? (int) $value : $default;
     }
 
     public function getList(string $path, array $default = []): array
     {
         $value = $this->get($path, $default);
+
         return is_array($value) ? $value : $default;
     }
 
@@ -61,6 +63,7 @@ class FieldExtractor
                 return $value;
             }
         }
+
         return null;
     }
 }

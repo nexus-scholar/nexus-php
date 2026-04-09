@@ -29,12 +29,11 @@ class NexusService
     }
 
     /**
-     * @param string[]|null $providerNames
-     * @return Generator
+     * @param  string[]|null  $providerNames
      */
     public function search(Query $query, ?array $providerNames = null): Generator
     {
-        $targets = $providerNames 
+        $targets = $providerNames
             ? array_intersect_key($this->providers, array_flip($providerNames))
             : $this->providers;
 

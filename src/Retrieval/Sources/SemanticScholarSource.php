@@ -14,7 +14,7 @@ class SemanticScholarSource extends BaseSource
     public function fetch(Document $doc, string $outputPath): bool
     {
         $pdfUrl = $this->getPdfUrl($doc);
-        if (!$pdfUrl) {
+        if (! $pdfUrl) {
             return false;
         }
 
@@ -24,7 +24,7 @@ class SemanticScholarSource extends BaseSource
     public function getPdfUrl(Document $doc): ?string
     {
         $s2Id = $doc->externalIds->s2Id;
-        if (!$s2Id) {
+        if (! $s2Id) {
             return null;
         }
 
@@ -37,7 +37,7 @@ class SemanticScholarSource extends BaseSource
             }
 
             $data = json_decode($response->getBody()->getContents(), true);
-            
+
             return $data['pdfUrl'] ?? null;
         } catch (\Exception $e) {
             return null;

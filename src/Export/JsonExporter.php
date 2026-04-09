@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Nexus\Export;
 
-use Nexus\Models\Document;
-use Nexus\Models\DocumentCluster;
 use Nexus\Utils\Exceptions\ExportError;
 
 class JsonExporter extends JsonlExporter
@@ -34,7 +32,7 @@ class JsonExporter extends JsonlExporter
             }
 
             $content .= implode(",\n", array_map(
-                fn($item, $idx) => ($idx > 0 ? "\n" : '') . $this->indentLines($item, $indent),
+                fn ($item, $idx) => ($idx > 0 ? "\n" : '').$this->indentLines($item, $indent),
                 $items,
                 array_keys($items)
             ));
@@ -65,7 +63,7 @@ class JsonExporter extends JsonlExporter
 
             if ($mode === 'clusters') {
                 foreach ($clusters as $cluster) {
-                    if (!$first) {
+                    if (! $first) {
                         $items[] = '';
                     }
                     $data = $this->clusterToDict($cluster, $includeRaw);
@@ -74,7 +72,7 @@ class JsonExporter extends JsonlExporter
                 }
             } elseif ($mode === 'representatives') {
                 foreach ($clusters as $cluster) {
-                    if (!$first) {
+                    if (! $first) {
                         $items[] = '';
                     }
                     $data = $this->documentToDict($cluster->representative, $includeRaw);
@@ -85,7 +83,7 @@ class JsonExporter extends JsonlExporter
             } elseif ($mode === 'all') {
                 foreach ($clusters as $cluster) {
                     foreach ($cluster->members as $doc) {
-                        if (!$first) {
+                        if (! $first) {
                             $items[] = '';
                         }
                         $data = $this->documentToDict($doc, $includeRaw);
@@ -96,7 +94,7 @@ class JsonExporter extends JsonlExporter
             }
 
             $content .= implode(",\n", array_map(
-                fn($item, $idx) => ($idx > 0 ? "\n" : '') . $this->indentLines($item, $indent),
+                fn ($item, $idx) => ($idx > 0 ? "\n" : '').$this->indentLines($item, $indent),
                 $items,
                 array_keys($items)
             ));
@@ -114,8 +112,9 @@ class JsonExporter extends JsonlExporter
     private function indentLines(string $text, int $spaces): string
     {
         $prefix = str_repeat(' ', $spaces);
+
         return implode("\n", array_map(
-            fn($line) => $prefix . $line,
+            fn ($line) => $prefix.$line,
             explode("\n", $text)
         ));
     }

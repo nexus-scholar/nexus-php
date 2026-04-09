@@ -9,7 +9,7 @@ class ValidationError extends SLRException
     public readonly ?string $field;
 
     public function __construct(
-        string $message = "Validation failed",
+        string $message = 'Validation failed',
         ?string $field = null,
         array $kwargs = []
     ) {

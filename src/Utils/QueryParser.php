@@ -7,12 +7,14 @@ use Nexus\Models\QueryField;
 class QueryParser
 {
     private const FIELD_PATTERN = '/^(\w+):/';
+
     private const PHRASE_PATTERN = '/^"([^"]*)"/';
+
     private const OPERATOR_PATTERN = '/^(AND|OR|NOT)\b/i';
 
     public function normalizeText(string $text): string
     {
-        if (!$text) {
+        if (! $text) {
             return '';
         }
 
@@ -42,6 +44,7 @@ class QueryParser
             if ($remaining[0] === '(' || $remaining[0] === ')') {
                 $tokens[] = new QueryToken($remaining[0], isOperator: true);
                 $remaining = substr($remaining, 1);
+
                 continue;
             }
 
@@ -49,6 +52,7 @@ class QueryParser
                 $fieldName = strtolower($matches[1]);
                 $currentField = QueryField::tryFrom($fieldName) ?? QueryField::ANY;
                 $remaining = substr($remaining, strlen($matches[0]));
+
                 continue;
             }
 
@@ -57,6 +61,7 @@ class QueryParser
                 $tokens[] = new QueryToken($phrase, $currentField ?? QueryField::ANY, isPhrase: true);
                 $remaining = substr($remaining, strlen($matches[0]));
                 $currentField = null;
+
                 continue;
             }
 
@@ -64,6 +69,7 @@ class QueryParser
                 $operator = strtoupper($matches[1]);
                 $tokens[] = new QueryToken($operator, isOperator: true);
                 $remaining = substr($remaining, strlen($matches[0]));
+
                 continue;
             }
 
@@ -72,6 +78,7 @@ class QueryParser
                 $tokens[] = new QueryToken($word, $currentField ?? QueryField::ANY, isPhrase: false);
                 $remaining = substr($remaining, strlen($matches[0]));
                 $currentField = null;
+
                 continue;
             }
 
@@ -82,7 +89,7 @@ class QueryParser
     }
 
     /**
-     * @param QueryToken[] $tokens
+     * @param  QueryToken[]  $tokens
      */
     public function validate(array $tokens): bool
     {

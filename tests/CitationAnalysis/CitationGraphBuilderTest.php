@@ -33,7 +33,7 @@ class CitationGraphBuilderTest extends TestCase
             $this->createDocument('Paper C', '10.1234/c'),
         ];
 
-        $builder = new CitationGraphBuilder();
+        $builder = new CitationGraphBuilder;
         $graph = $builder->buildFromDocuments($documents);
 
         $this->assertInstanceOf(Graph::class, $graph);
@@ -48,7 +48,7 @@ class CitationGraphBuilderTest extends TestCase
             'referenced_works' => ['doi:10.1234/a'],
         ]);
 
-        $builder = new CitationGraphBuilder();
+        $builder = new CitationGraphBuilder;
         $graph = $builder->buildCitationGraph([$docA, $docB]);
 
         $this->assertCount(2, $graph->nodes());
@@ -67,7 +67,7 @@ class CitationGraphBuilderTest extends TestCase
             'citing_papers' => ['cite5', 'cite6'],
         ]);
 
-        $builder = new CitationGraphBuilder();
+        $builder = new CitationGraphBuilder;
         $graph = $builder->buildCoCitationGraph([$docA, $docB, $docC]);
 
         $this->assertCount(3, $graph->nodes());
@@ -88,7 +88,7 @@ class CitationGraphBuilderTest extends TestCase
             'referenced_works' => ['ref5', 'ref6'],
         ]);
 
-        $builder = new CitationGraphBuilder();
+        $builder = new CitationGraphBuilder;
         $graph = $builder->buildBibliographicCouplingGraph([$docA, $docB, $docC]);
 
         $this->assertCount(3, $graph->nodes());
@@ -103,7 +103,7 @@ class CitationGraphBuilderTest extends TestCase
             'year' => 2023,
         ]);
 
-        $builder = new CitationGraphBuilder();
+        $builder = new CitationGraphBuilder;
         $graph = $builder->buildFromDocuments([$doc]);
 
         $attrs = $graph->nodeAttrs('doi:10.1234/test');
@@ -115,7 +115,7 @@ class CitationGraphBuilderTest extends TestCase
 
     public function test_empty_documents_returns_empty_graph(): void
     {
-        $builder = new CitationGraphBuilder();
+        $builder = new CitationGraphBuilder;
         $graph = $builder->buildFromDocuments([]);
 
         $this->assertCount(0, $graph->nodes());
@@ -131,7 +131,7 @@ class CitationGraphBuilderTest extends TestCase
             providerId: 'W123456789'
         );
 
-        $builder = new CitationGraphBuilder();
+        $builder = new CitationGraphBuilder;
         $graph = $builder->buildFromDocuments([$doc]);
 
         $this->assertCount(1, $graph->nodes());

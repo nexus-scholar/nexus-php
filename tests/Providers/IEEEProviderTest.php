@@ -2,15 +2,15 @@
 
 namespace Nexus\Tests\Providers;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use Nexus\Models\ProviderConfig;
 use Nexus\Models\Query;
 use Nexus\Providers\IEEEProvider;
 use Nexus\Utils\Exceptions\AuthenticationError;
 use PHPUnit\Framework\TestCase;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
 
 class IEEEProviderTest extends TestCase
 {
@@ -18,6 +18,7 @@ class IEEEProviderTest extends TestCase
     {
         $mock = new MockHandler($responses);
         $handlerStack = HandlerStack::create($mock);
+
         return new Client(['handler' => $handlerStack]);
     }
 

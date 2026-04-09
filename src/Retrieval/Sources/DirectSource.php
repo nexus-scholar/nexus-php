@@ -14,7 +14,7 @@ class DirectSource extends BaseSource
     public function fetch(Document $doc, string $outputPath): bool
     {
         $url = $this->getPdfUrl($doc);
-        if (!$url) {
+        if (! $url) {
             return false;
         }
 
@@ -31,7 +31,8 @@ class DirectSource extends BaseSource
         }
 
         if ($doc->externalIds->doi) {
-            $doiUrl = "https://doi.org/" . $doc->externalIds->doi;
+            $doiUrl = 'https://doi.org/'.$doc->externalIds->doi;
+
             return $doiUrl;
         }
 

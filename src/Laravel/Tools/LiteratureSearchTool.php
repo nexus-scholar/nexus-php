@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Laravel\Ai\Contracts\Tool;
 use Laravel\Ai\Tools\Request;
+use Nexus\Core\NexusService;
 use Nexus\Laravel\NexusConfig;
 use Nexus\Laravel\NexusSearcher;
 use Nexus\Models\Document;
@@ -37,24 +38,28 @@ class LiteratureSearchTool implements Tool
     public function withDescription(string $description): self
     {
         $this->description = $description;
+
         return $this;
     }
 
     public function withProviders(array $providers): self
     {
         $this->providers = $providers;
+
         return $this;
     }
 
     public function withAbstract(bool $include): self
     {
         $this->includeAbstract = $include;
+
         return $this;
     }
 
     public function withAuthors(bool $include): self
     {
         $this->includeAuthors = $include;
+
         return $this;
     }
 
@@ -123,6 +128,7 @@ class LiteratureSearchTool implements Tool
     {
         if ($this->customSearcher !== null) {
             $results = call_user_func($this->customSearcher, $query, $this->providers);
+
             return match (true) {
                 is_array($results) => new Collection($results),
                 $results instanceof Collection => $results,
@@ -131,6 +137,7 @@ class LiteratureSearchTool implements Tool
         }
 
         $searcher = $this->resolveSearcher();
+
         return new Collection($searcher->search($query, $this->providers));
     }
 
@@ -142,7 +149,7 @@ class LiteratureSearchTool implements Tool
 
         $app = app();
         $this->searcherInstance = new NexusSearcher(
-            $app->make(\Nexus\Core\NexusService::class),
+            $app->make(NexusService::class),
             NexusConfig::fromLaravelConfig(),
             $app->make('cache.store')
         );
@@ -191,7 +198,7 @@ class LiteratureSearchTool implements Tool
             return 'Unknown';
         }
 
-        $names = array_map(fn($author) => $author->name, $authors);
+        $names = array_map(fn ($author) => $author->name, $authors);
         $first = $names[0] ?? 'Unknown';
         $count = count($names);
 

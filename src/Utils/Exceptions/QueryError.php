@@ -9,7 +9,7 @@ class QueryError extends SLRException
     public readonly ?string $query;
 
     public function __construct(
-        string $message = "Query error",
+        string $message = 'Query error',
         ?string $query = null,
         array $kwargs = []
     ) {

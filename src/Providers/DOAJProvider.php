@@ -57,7 +57,7 @@ class DOAJProvider extends BaseProvider
         $maxResults = $query->maxResults ?? 1000;
 
         while ($totalFetched < $maxResults) {
-            $url = self::BASE_URL . '/' . urlencode($searchText);
+            $url = self::BASE_URL.'/'.urlencode($searchText);
             $params = [
                 'page' => $page,
                 'pageSize' => $pageSize,
@@ -109,7 +109,7 @@ class DOAJProvider extends BaseProvider
             $extractor = new FieldExtractor($bibjson);
 
             $title = $extractor->getString('title');
-            if (!$title) {
+            if (! $title) {
                 return null;
             }
 
@@ -126,7 +126,7 @@ class DOAJProvider extends BaseProvider
             $authorList = $extractor->getList('author');
             foreach ($authorList as $au) {
                 $name = $au['name'] ?? null;
-                if (!$name) {
+                if (! $name) {
                     continue;
                 }
 
@@ -146,7 +146,7 @@ class DOAJProvider extends BaseProvider
             foreach ($identifiers as $ident) {
                 $type = $ident['type'] ?? null;
                 $id = $ident['id'] ?? null;
-                if (!$type || !$id) {
+                if (! $type || ! $id) {
                     continue;
                 }
 
@@ -157,7 +157,7 @@ class DOAJProvider extends BaseProvider
                 }
             }
 
-            if (!$url && $doi) {
+            if (! $url && $doi) {
                 $url = "https://doi.org/{$doi}";
             }
 

@@ -2,20 +2,20 @@
 
 namespace Nexus\Tests\Utils;
 
-use Nexus\Utils\Exceptions\SLRException;
-use Nexus\Utils\Exceptions\ProviderError;
-use Nexus\Utils\Exceptions\RateLimitError;
-use Nexus\Utils\Exceptions\NetworkError;
 use Nexus\Utils\Exceptions\AuthenticationError;
 use Nexus\Utils\Exceptions\DeduplicationError;
-use Nexus\Utils\Exceptions\ValidationError;
 use Nexus\Utils\Exceptions\ExportError;
+use Nexus\Utils\Exceptions\NetworkError;
+use Nexus\Utils\Exceptions\ProviderError;
 use Nexus\Utils\Exceptions\QueryError;
+use Nexus\Utils\Exceptions\RateLimitError;
+use Nexus\Utils\Exceptions\SLRException;
+use Nexus\Utils\Exceptions\ValidationError;
 use PHPUnit\Framework\TestCase;
 
 class ExceptionsTest extends TestCase
 {
-    public function testSlrExceptionCreation(): void
+    public function test_slr_exception_creation(): void
     {
         $exception = new SLRException('Test message', ['key' => 'value']);
 
@@ -24,7 +24,7 @@ class ExceptionsTest extends TestCase
         $this->assertInstanceOf(\DateTimeImmutable::class, $exception->timestamp);
     }
 
-    public function testSlrExceptionToString(): void
+    public function test_slr_exception_to_string(): void
     {
         $exception = new SLRException('Test message', ['key' => 'value']);
 
@@ -33,7 +33,7 @@ class ExceptionsTest extends TestCase
         $this->assertStringContainsString('key=value', $result);
     }
 
-    public function testSlrExceptionToArray(): void
+    public function test_slr_exception_to_array(): void
     {
         $exception = new SLRException('Test message');
 
@@ -43,7 +43,7 @@ class ExceptionsTest extends TestCase
         $this->assertArrayHasKey('timestamp', $array);
     }
 
-    public function testProviderError(): void
+    public function test_provider_error(): void
     {
         $exception = new ProviderError('openalex', 'Provider failed');
 
@@ -52,7 +52,7 @@ class ExceptionsTest extends TestCase
         $this->assertStringContainsString('Provider failed', $exception->getMessage());
     }
 
-    public function testRateLimitError(): void
+    public function test_rate_limit_error(): void
     {
         $exception = new RateLimitError('crossref', 'Too many requests', 60);
 
@@ -60,7 +60,7 @@ class ExceptionsTest extends TestCase
         $this->assertEquals(60, $exception->retryAfter);
     }
 
-    public function testNetworkError(): void
+    public function test_network_error(): void
     {
         $exception = new NetworkError('arxiv', 'Connection timeout', 504);
 
@@ -68,7 +68,7 @@ class ExceptionsTest extends TestCase
         $this->assertEquals(504, $exception->statusCode);
     }
 
-    public function testAuthenticationError(): void
+    public function test_authentication_error(): void
     {
         $exception = new AuthenticationError('openalex', 'Invalid API key');
 
@@ -76,14 +76,14 @@ class ExceptionsTest extends TestCase
         $this->assertStringContainsString('Invalid API key', $exception->getMessage());
     }
 
-    public function testDeduplicationError(): void
+    public function test_deduplication_error(): void
     {
         $exception = new DeduplicationError('Failed to merge documents');
 
         $this->assertStringContainsString('Failed to merge documents', $exception->getMessage());
     }
 
-    public function testValidationError(): void
+    public function test_validation_error(): void
     {
         $exception = new ValidationError('Invalid input', 'email');
 
@@ -91,7 +91,7 @@ class ExceptionsTest extends TestCase
         $this->assertStringContainsString('Invalid input', $exception->getMessage());
     }
 
-    public function testExportError(): void
+    public function test_export_error(): void
     {
         $exception = new ExportError('Export failed', 'csv');
 
@@ -99,7 +99,7 @@ class ExceptionsTest extends TestCase
         $this->assertStringContainsString('Export failed', $exception->getMessage());
     }
 
-    public function testQueryError(): void
+    public function test_query_error(): void
     {
         $exception = new QueryError('Invalid query syntax', 'title:');
 

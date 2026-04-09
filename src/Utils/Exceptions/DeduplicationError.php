@@ -6,7 +6,7 @@ namespace Nexus\Utils\Exceptions;
 
 class DeduplicationError extends SLRException
 {
-    public function __construct(string $message = "Deduplication failed", array $kwargs = [])
+    public function __construct(string $message = 'Deduplication failed', array $kwargs = [])
     {
         $details = [];
         foreach ($kwargs as $key => $value) {

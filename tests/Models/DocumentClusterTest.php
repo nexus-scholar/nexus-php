@@ -2,8 +2,8 @@
 
 namespace Nexus\Tests;
 
-use Nexus\Models\DocumentCluster;
 use Nexus\Models\Document;
+use Nexus\Models\DocumentCluster;
 use Nexus\Models\ExternalIds;
 use PHPUnit\Framework\TestCase;
 
@@ -16,7 +16,7 @@ class DocumentClusterTest extends TestCase
             year: $year,
             provider: $provider,
             providerId: uniqid(),
-            externalIds: new ExternalIds()
+            externalIds: new ExternalIds
         );
     }
 

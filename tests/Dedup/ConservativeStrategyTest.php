@@ -181,8 +181,8 @@ class ConservativeStrategyTest extends TestCase
         $clusters = $strategy->deduplicate($docs);
 
         $this->assertCount(2, $clusters);
-        
-        $sizes = array_map(fn($c) => $c->size(), $clusters);
+
+        $sizes = array_map(fn ($c) => $c->size(), $clusters);
         $this->assertContains(2, $sizes);
         $this->assertContains(1, $sizes);
     }

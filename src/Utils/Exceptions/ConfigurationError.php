@@ -9,7 +9,7 @@ class ConfigurationError extends SLRException
     public readonly ?string $configKey;
 
     public function __construct(
-        string $message = "Configuration error",
+        string $message = 'Configuration error',
         ?string $configKey = null,
         array $kwargs = []
     ) {

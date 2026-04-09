@@ -12,9 +12,9 @@ class GraphExporterTest extends TestCase
     {
         $graph = new Graph(directed: true);
         $graph->addNode('a', ['label' => 'Node A']);
-        
+
         $result = GraphExporter::export($graph, 'gexf');
-        
+
         $this->assertIsString($result);
         $this->assertStringContainsString('<gexf', $result);
     }
@@ -23,9 +23,9 @@ class GraphExporterTest extends TestCase
     {
         $graph = new Graph(directed: true);
         $graph->addNode('a', ['label' => 'Node A']);
-        
+
         $result = GraphExporter::export($graph, 'graphml');
-        
+
         $this->assertIsString($result);
         $this->assertStringContainsString('<graphml', $result);
     }
@@ -34,9 +34,9 @@ class GraphExporterTest extends TestCase
     {
         $graph = new Graph(directed: true);
         $graph->addNode('a', ['label' => 'Node A']);
-        
+
         $result = GraphExporter::export($graph, 'cytoscape');
-        
+
         $this->assertIsArray($result);
         $this->assertArrayHasKey('elements', $result);
     }
@@ -45,17 +45,17 @@ class GraphExporterTest extends TestCase
     {
         $graph = new Graph(directed: true);
         $graph->addNode('a');
-        
+
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Unknown format: unknown');
-        
+
         GraphExporter::export($graph, 'unknown');
     }
 
     public function test_get_supported_formats(): void
     {
         $formats = GraphExporter::getSupportedFormats();
-        
+
         $this->assertIsArray($formats);
         $this->assertArrayHasKey('gexf', $formats);
         $this->assertArrayHasKey('graphml', $formats);
@@ -69,10 +69,10 @@ class GraphExporterTest extends TestCase
     {
         $graph = new Graph(directed: true);
         $graph->addNode('a', ['label' => 'A']);
-        
+
         $resultUpper = GraphExporter::export($graph, 'GEXF');
         $resultLower = GraphExporter::export($graph, 'gexf');
-        
+
         $this->assertStringContainsString('<gexf', $resultUpper);
         $this->assertStringContainsString('<gexf', $resultLower);
     }
@@ -83,16 +83,16 @@ class GraphExporterTest extends TestCase
         $graph->addNode('a', ['label' => 'A']);
         $graph->addNode('b', ['label' => 'B']);
         $graph->addEdge('a', 'b');
-        
-        $tempFile = sys_get_temp_dir() . '/test_export_' . uniqid() . '.gexf';
-        
+
+        $tempFile = sys_get_temp_dir().'/test_export_'.uniqid().'.gexf';
+
         GraphExporter::save($graph, 'gexf', $tempFile);
-        
+
         $this->assertFileExists($tempFile);
-        
+
         $content = file_get_contents($tempFile);
         $this->assertStringContainsString('<gexf', $content);
-        
+
         unlink($tempFile);
     }
 
@@ -100,14 +100,14 @@ class GraphExporterTest extends TestCase
     {
         $graph = new Graph(directed: true);
         $graph->addNode('a', ['label' => 'A']);
-        
-        $tempDir = sys_get_temp_dir() . '/nexus_test_' . uniqid();
-        $tempFile = $tempDir . '/subdir/test.graphml';
-        
+
+        $tempDir = sys_get_temp_dir().'/nexus_test_'.uniqid();
+        $tempFile = $tempDir.'/subdir/test.graphml';
+
         GraphExporter::save($graph, 'graphml', $tempFile);
-        
+
         $this->assertFileExists($tempFile);
-        
+
         unlink($tempFile);
         rmdir(dirname($tempFile));
         rmdir($tempDir);
@@ -117,19 +117,19 @@ class GraphExporterTest extends TestCase
     {
         $graph = new Graph(directed: true);
         $graph->addNode('a', ['label' => 'A']);
-        
-        $tempFile = sys_get_temp_dir() . '/test_export_' . uniqid() . '.json';
-        
+
+        $tempFile = sys_get_temp_dir().'/test_export_'.uniqid().'.json';
+
         GraphExporter::save($graph, 'cytoscape', $tempFile);
-        
+
         $this->assertFileExists($tempFile);
-        
+
         $content = file_get_contents($tempFile);
         $decoded = json_decode($content, true);
-        
+
         $this->assertIsArray($decoded);
         $this->assertArrayHasKey('elements', $decoded);
-        
+
         unlink($tempFile);
     }
 }

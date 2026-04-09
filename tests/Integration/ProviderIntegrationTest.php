@@ -2,22 +2,21 @@
 
 namespace Nexus\Tests\Integration;
 
-use Nexus\Models\Document;
-use Nexus\Models\ExternalIds;
-use Nexus\Models\Query;
-use Nexus\Models\ProviderConfig;
-use Nexus\Providers\OpenAlexProvider;
-use Nexus\Providers\CrossrefProvider;
-use Nexus\Providers\ArxivProvider;
-use Nexus\Providers\SemanticScholarProvider;
-use Nexus\Providers\PubMedProvider;
-use Nexus\Providers\IEEEProvider;
-use Nexus\Providers\DOAJProvider;
-use PHPUnit\Framework\TestCase;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use Nexus\Models\Document;
+use Nexus\Models\ProviderConfig;
+use Nexus\Models\Query;
+use Nexus\Providers\ArxivProvider;
+use Nexus\Providers\CrossrefProvider;
+use Nexus\Providers\DOAJProvider;
+use Nexus\Providers\IEEEProvider;
+use Nexus\Providers\OpenAlexProvider;
+use Nexus\Providers\PubMedProvider;
+use Nexus\Providers\SemanticScholarProvider;
+use PHPUnit\Framework\TestCase;
 
 class ProviderIntegrationTest extends TestCase
 {
@@ -25,6 +24,7 @@ class ProviderIntegrationTest extends TestCase
     {
         $mock = new MockHandler($responses);
         $handlerStack = HandlerStack::create($mock);
+
         return new Client(['handler' => $handlerStack]);
     }
 

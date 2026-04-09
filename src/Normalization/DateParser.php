@@ -19,6 +19,7 @@ class DateParser
             if ($dateValue >= 1900 && $dateValue <= 2100) {
                 return $dateValue;
             }
+
             return null;
         }
 
@@ -27,6 +28,7 @@ class DateParser
             if ($year !== null) {
                 return self::extractYear($year);
             }
+
             return null;
         }
 

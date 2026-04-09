@@ -1,5 +1,5 @@
 {
-  "$schema": "https://nexus-scholar.github.io/nexus-php/schemas/skills.json",
+  "$schema": "https://nexus.github.io/nexus-php/schemas/skills.json",
   "package": "nexus/nexus-php",
   "version": "1.0.0",
   "description": "PHP library for systematic literature reviews — multi-provider academic search, citation analysis, deduplication, and Laravel AI integration.",

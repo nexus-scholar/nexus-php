@@ -12,7 +12,7 @@ class ConfigLoader
 {
     public static function loadFromFile(string $path): NexusConfig
     {
-        if (!file_exists($path)) {
+        if (! file_exists($path)) {
             throw new ConfigurationError("Config file not found: {$path}");
         }
 
@@ -37,8 +37,8 @@ class ConfigLoader
     public static function loadFromPhp(string $path): NexusConfig
     {
         $data = require $path;
-        if (!is_array($data)) {
-            throw new ConfigurationError("PHP config must return an array");
+        if (! is_array($data)) {
+            throw new ConfigurationError('PHP config must return an array');
         }
 
         return self::loadFromArray($data);
@@ -48,7 +48,7 @@ class ConfigLoader
     {
         $data = json_decode($json, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new ConfigurationError("Invalid JSON: " . json_last_error_msg());
+            throw new ConfigurationError('Invalid JSON: '.json_last_error_msg());
         }
 
         return self::loadFromArray($data);
@@ -59,11 +59,11 @@ class ConfigLoader
         try {
             $data = Yaml::parse($yaml);
         } catch (ParseException $e) {
-            throw new ConfigurationError("Invalid YAML: " . $e->getMessage(), 0, $e);
+            throw new ConfigurationError('Invalid YAML: '.$e->getMessage(), 0, $e);
         }
 
-        if (!is_array($data)) {
-            throw new ConfigurationError("YAML config must parse to an array");
+        if (! is_array($data)) {
+            throw new ConfigurationError('YAML config must parse to an array');
         }
 
         return self::loadFromArray($data);
@@ -95,10 +95,10 @@ class ConfigLoader
     public static function loadDefault(): NexusConfig
     {
         $candidates = [
-            __DIR__ . '/../../config/nexus.php',
-            __DIR__ . '/../../config/nexus.json',
-            __DIR__ . '/../../config/nexus.yml',
-            __DIR__ . '/../../config/nexus.yaml',
+            __DIR__.'/../../config/nexus.php',
+            __DIR__.'/../../config/nexus.json',
+            __DIR__.'/../../config/nexus.yml',
+            __DIR__.'/../../config/nexus.yaml',
         ];
 
         foreach ($candidates as $path) {
@@ -107,7 +107,7 @@ class ConfigLoader
             }
         }
 
-        throw new ConfigurationError("No config file found. Please create config/nexus.php, config/nexus.json, config/nexus.yml, or config/nexus.yaml");
+        throw new ConfigurationError('No config file found. Please create config/nexus.php, config/nexus.json, config/nexus.yml, or config/nexus.yaml');
     }
 
     public static function getConfigPath(?string $configPath = null): string
@@ -117,11 +117,11 @@ class ConfigLoader
         }
 
         $paths = [
-            getcwd() . '/config/nexus.json',
-            getcwd() . '/config/nexus.php',
-            getcwd() . '/config/nexus.yml',
-            getcwd() . '/config/nexus.yaml',
-            __DIR__ . '/../../config/nexus.php',
+            getcwd().'/config/nexus.json',
+            getcwd().'/config/nexus.php',
+            getcwd().'/config/nexus.yml',
+            getcwd().'/config/nexus.yaml',
+            __DIR__.'/../../config/nexus.php',
         ];
 
         foreach ($paths as $path) {
@@ -130,6 +130,6 @@ class ConfigLoader
             }
         }
 
-        return __DIR__ . '/../../config/nexus.php';
+        return __DIR__.'/../../config/nexus.php';
     }
 }

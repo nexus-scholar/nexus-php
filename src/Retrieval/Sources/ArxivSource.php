@@ -14,7 +14,7 @@ class ArxivSource extends BaseSource
     public function fetch(Document $doc, string $outputPath): bool
     {
         $url = $this->getPdfUrl($doc);
-        if (!$url) {
+        if (! $url) {
             return false;
         }
 
@@ -24,7 +24,7 @@ class ArxivSource extends BaseSource
     public function getPdfUrl(Document $doc): ?string
     {
         $arxivId = $doc->externalIds->arxivId;
-        if (!$arxivId) {
+        if (! $arxivId) {
             return null;
         }
 

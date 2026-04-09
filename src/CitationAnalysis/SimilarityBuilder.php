@@ -8,7 +8,9 @@ use Nexus\Models\Document;
 class SimilarityBuilder
 {
     private array $documents = [];
+
     private CoCitationAnalyzer $coCitationAnalyzer;
+
     private BibliographicCoupling $bibliographicCoupling;
 
     public function __construct(array $documents)
@@ -86,10 +88,10 @@ class SimilarityBuilder
 
         foreach ($coupling as $paperA => $neighbors) {
             foreach ($neighbors as $paperB => $count) {
-                if (!isset($combined[$paperA])) {
+                if (! isset($combined[$paperA])) {
                     $combined[$paperA] = [];
                 }
-                if (!isset($combined[$paperA][$paperB])) {
+                if (! isset($combined[$paperA][$paperB])) {
                     $combined[$paperA][$paperB] = 0.0;
                 }
                 $combined[$paperA][$paperB] += (float) $count;
@@ -102,10 +104,10 @@ class SimilarityBuilder
     private function getNodeId(Document $document): string
     {
         if ($document->externalIds?->doi) {
-            return 'doi:' . $document->externalIds->doi;
+            return 'doi:'.$document->externalIds->doi;
         }
 
-        return 'id:' . $document->providerId;
+        return 'id:'.$document->providerId;
     }
 
     private function documentToNodeAttributes(Document $document): array
@@ -128,6 +130,6 @@ class SimilarityBuilder
             return $title;
         }
 
-        return substr($title, 0, $maxLength - 3) . '...';
+        return substr($title, 0, $maxLength - 3).'...';
     }
 }

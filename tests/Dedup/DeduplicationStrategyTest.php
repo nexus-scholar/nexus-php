@@ -129,7 +129,7 @@ class DeduplicationStrategyTest extends TestCase
     {
         $doc1 = $this->createDocument('Doc 1');
         $doc1->externalIds = new ExternalIds(doi: '10.1234/one');
-        
+
         $doc2 = $this->createDocument('Doc 2');
         $doc2->externalIds = new ExternalIds(arxivId: '2301.00001');
 
@@ -143,7 +143,7 @@ class DeduplicationStrategyTest extends TestCase
     {
         $doc1 = $this->createDocument('Short Abstract');
         $doc1->abstract = 'Short';
-        
+
         $doc2 = $this->createDocument('Long Abstract');
         $doc2->abstract = 'This is a much longer abstract that should be selected during fusion process.';
 
@@ -156,7 +156,7 @@ class DeduplicationStrategyTest extends TestCase
     {
         $doc1 = $this->createDocument('Doc 1');
         $doc1->citedByCount = 10;
-        
+
         $doc2 = $this->createDocument('Doc 2');
         $doc2->citedByCount = 50;
 

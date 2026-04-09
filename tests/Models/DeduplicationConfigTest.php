@@ -10,7 +10,7 @@ class DeduplicationConfigTest extends TestCase
 {
     public function test_default_config()
     {
-        $config = new DeduplicationConfig();
+        $config = new DeduplicationConfig;
 
         $this->assertEquals(DeduplicationStrategyName::CONSERVATIVE, $config->strategy);
         $this->assertEquals(97, $config->fuzzyThreshold);

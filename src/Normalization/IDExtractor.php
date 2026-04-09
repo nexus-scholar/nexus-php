@@ -40,22 +40,24 @@ class IDExtractor
                 return $value;
             }
         }
+
         return null;
     }
 
     public function extractDoi(?string ...$paths): ?string
     {
         $doi = $paths !== [] ? $this->getFirst(...$paths) : $this->get('doi');
-        if (!$doi) {
+        if (! $doi) {
             return null;
         }
+
         return trim((string) $doi);
     }
 
     public function extractArxivId(?string ...$paths): ?string
     {
         $arxivId = $paths !== [] ? $this->getFirst(...$paths) : $this->get('arxiv_id');
-        if (!$arxivId) {
+        if (! $arxivId) {
             return null;
         }
 
@@ -69,13 +71,14 @@ class IDExtractor
     public function extractPmid(?string ...$paths): ?string
     {
         $pmid = $paths !== [] ? $this->getFirst(...$paths) : $this->get('pmid');
+
         return $pmid !== null ? trim((string) $pmid) : null;
     }
 
     public function extractOpenalexId(?string ...$paths): ?string
     {
         $oaId = $paths !== [] ? $this->getFirst(...$paths) : $this->get('id');
-        if (!$oaId) {
+        if (! $oaId) {
             return null;
         }
 
@@ -93,6 +96,7 @@ class IDExtractor
     public function extractS2Id(?string ...$paths): ?string
     {
         $s2Id = $paths !== [] ? $this->getFirst(...$paths) : $this->get('corpusId');
+
         return $s2Id !== null ? trim((string) $s2Id) : null;
     }
 

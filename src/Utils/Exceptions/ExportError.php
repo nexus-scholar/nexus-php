@@ -9,7 +9,7 @@ class ExportError extends SLRException
     public readonly ?string $format;
 
     public function __construct(
-        string $message = "Export failed",
+        string $message = 'Export failed',
         ?string $format = null,
         array $kwargs = []
     ) {

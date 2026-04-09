@@ -2,13 +2,14 @@
 
 namespace Nexus\Tests\Normalization;
 
-use Nexus\Normalization\ResponseNormalizer;
 use Nexus\Models\Document;
+use Nexus\Normalization\AuthorParser;
+use Nexus\Normalization\ResponseNormalizer;
 use PHPUnit\Framework\TestCase;
 
 class ResponseNormalizerTest extends TestCase
 {
-    public function testNormalizeBasicDocument(): void
+    public function test_normalize_basic_document(): void
     {
         $normalizer = new ResponseNormalizer('openalex');
 
@@ -16,7 +17,7 @@ class ResponseNormalizerTest extends TestCase
             'title' => 'Test Paper',
             'publication_year' => 2023,
             'authorships' => [
-                ['author' => ['display_name' => 'John Smith']]
+                ['author' => ['display_name' => 'John Smith']],
             ],
             'doi' => '10.1234/test',
             'abstract' => 'This is a test abstract',
@@ -42,7 +43,7 @@ class ResponseNormalizerTest extends TestCase
         $this->assertEquals('Test Journal', $doc->venue);
     }
 
-    public function testNormalizeWithMissingTitle(): void
+    public function test_normalize_with_missing_title(): void
     {
         $normalizer = new ResponseNormalizer('crossref');
 
@@ -55,7 +56,7 @@ class ResponseNormalizerTest extends TestCase
         $this->assertNull($doc);
     }
 
-    public function testNormalizeWithCustomAuthorParser(): void
+    public function test_normalize_with_custom_author_parser(): void
     {
         $normalizer = new ResponseNormalizer('arxiv');
 
@@ -65,7 +66,7 @@ class ResponseNormalizerTest extends TestCase
         ];
 
         $customParser = function ($data) {
-            return \Nexus\Normalization\AuthorParser::parseAuthors(
+            return AuthorParser::parseAuthors(
                 $data['authors'],
                 'name'
             );
@@ -78,7 +79,7 @@ class ResponseNormalizerTest extends TestCase
         $this->assertEquals('Smith', $doc->authors[0]->familyName);
     }
 
-    public function testNormalizeWithNoData(): void
+    public function test_normalize_with_no_data(): void
     {
         $normalizer = new ResponseNormalizer('test');
 

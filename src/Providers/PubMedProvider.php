@@ -9,9 +9,6 @@ use Nexus\Models\ExternalIds;
 use Nexus\Models\Query;
 use Nexus\Models\QueryField;
 use Nexus\Utils\BooleanQueryTranslator;
-use Nexus\Utils\Exceptions\NetworkError;
-use Nexus\Utils\Exceptions\RateLimitError;
-use SimpleXMLElement;
 
 class PubMedProvider extends BaseProvider
 {
@@ -39,7 +36,8 @@ class PubMedProvider extends BaseProvider
         $this->translator = new BooleanQueryTranslator($fieldMap);
 
         $translator = $this->translator;
-        $this->translator = new class($fieldMap, $translator) extends BooleanQueryTranslator {
+        $this->translator = new class($fieldMap, $translator) extends BooleanQueryTranslator
+        {
             public function __construct(
                 array $fieldMap,
                 private BooleanQueryTranslator $original
@@ -49,7 +47,7 @@ class PubMedProvider extends BaseProvider
 
             public function formatFieldTerm(string $field, string $term, bool $isPhrase): string
             {
-                if (!$field || $field === 'any') {
+                if (! $field || $field === 'any') {
                     return $isPhrase ? "\"{$term}\"" : $term;
                 }
 
@@ -68,7 +66,7 @@ class PubMedProvider extends BaseProvider
         $esearchParams['usehistory'] = 'y';
 
         try {
-            $esearchUrl = self::BASE_URL . '/esearch.fcgi';
+            $esearchUrl = self::BASE_URL.'/esearch.fcgi';
             $esearchResponse = $this->makeRequestXml($esearchUrl, $esearchParams);
             $esearchRoot = simplexml_load_string($esearchResponse);
 
@@ -143,7 +141,7 @@ class PubMedProvider extends BaseProvider
 
     private function fetchAndProcessBatch(array $params): Generator
     {
-        $efetchUrl = self::BASE_URL . '/efetch.fcgi';
+        $efetchUrl = self::BASE_URL.'/efetch.fcgi';
         try {
             $responseXml = $this->makeRequestXml($efetchUrl, $params);
             $root = simplexml_load_string($responseXml);
@@ -200,7 +198,7 @@ class PubMedProvider extends BaseProvider
             }
 
             $title = (string) ($article->ArticleTitle ?? '');
-            if (!$title) {
+            if (! $title) {
                 return null;
             }
 
@@ -258,7 +256,7 @@ class PubMedProvider extends BaseProvider
                     $medlineDate = (string) ($pubDate->MedlineDate ?? '');
                     if ($medlineDate !== '') {
                         preg_match('/\d{4}/', $medlineDate, $matches);
-                        if (!empty($matches)) {
+                        if (! empty($matches)) {
                             $year = (int) $matches[0];
                         }
                     }
@@ -319,7 +317,7 @@ class PubMedProvider extends BaseProvider
     private function makeRequestXml(string $url, array $params = []): string
     {
         $queryString = http_build_query($params);
-        $fullUrl = $url . ($queryString ? '?' . $queryString : '');
+        $fullUrl = $url.($queryString ? '?'.$queryString : '');
         $this->lastQuery = $fullUrl;
 
         $response = $this->client->get($url, ['query' => $params]);

@@ -16,7 +16,7 @@ class ExternalIds
 
     private function normalizeDoi(?string $doi): ?string
     {
-        if (!$doi) {
+        if (! $doi) {
             return null;
         }
 

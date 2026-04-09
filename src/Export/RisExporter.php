@@ -24,7 +24,7 @@ class RisExporter extends BaseExporter
             $content = '';
 
             foreach ($documents as $doc) {
-                $content .= $this->documentToRis($doc) . "\n\n";
+                $content .= $this->documentToRis($doc)."\n\n";
             }
 
             $this->writeToFile($path, $content);
@@ -38,7 +38,7 @@ class RisExporter extends BaseExporter
     public function exportClusters(array $clusters, string $outputFile, ...$kwargs): string
     {
         $representatives = array_map(
-            fn(DocumentCluster $c) => $c->representative,
+            fn (DocumentCluster $c) => $c->representative,
             $clusters
         );
 
@@ -99,7 +99,7 @@ class RisExporter extends BaseExporter
             $lines[] = "C1  - arXiv: {$doc->externalIds->arxivId}";
         }
 
-        $lines[] = "ER  -";
+        $lines[] = 'ER  -';
 
         return implode("\n", $lines);
     }

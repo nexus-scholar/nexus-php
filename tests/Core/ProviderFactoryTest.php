@@ -2,13 +2,12 @@
 
 namespace Nexus\Tests\Core;
 
+use InvalidArgumentException;
 use Nexus\Core\ProviderFactory;
-use Nexus\Models\ProviderConfig;
-use Nexus\Providers\OpenAlexProvider;
 use Nexus\Providers\ArxivProvider;
 use Nexus\Providers\CrossrefProvider;
+use Nexus\Providers\OpenAlexProvider;
 use Nexus\Providers\SemanticScholarProvider;
-use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 class ProviderFactoryTest extends TestCase

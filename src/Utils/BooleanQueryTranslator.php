@@ -18,14 +18,14 @@ class BooleanQueryTranslator
         ],
         private string $specialChars = ''
     ) {
-        $this->parser = new QueryParser();
+        $this->parser = new QueryParser;
     }
 
     public function translate(Query $query): array
     {
         $tokens = $this->parser->parse($query->text);
 
-        if (!$this->parser->validate($tokens)) {
+        if (! $this->parser->validate($tokens)) {
             return ['q' => $query->text];
         }
 

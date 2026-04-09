@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Nexus\Utils;
 
 use Closure;
-use Throwable;
 use Nexus\Utils\Exceptions\NetworkError;
 use Nexus\Utils\Exceptions\RateLimitError;
+use Throwable;
 
 class Retry
 {
@@ -31,19 +31,19 @@ class Retry
             } catch (Throwable $e) {
                 $lastException = $e;
 
-        if (!$this->shouldRetry($e)) {
-                throw $e;
+                if (! $this->shouldRetry($e)) {
+                    throw $e;
+                }
+
+                if ($attempt < $this->maxRetries - 1) {
+                    $currentDelay = min($delay, $this->maxDelay);
+
+                    $this->callOnRetry($e, $attempt + 1);
+
+                    usleep((int) ($currentDelay * 1000000));
+                    $delay *= $this->backoffFactor;
+                }
             }
-
-            if ($attempt < $this->maxRetries - 1) {
-                $currentDelay = min($delay, $this->maxDelay);
-
-                $this->callOnRetry($e, $attempt + 1);
-
-                usleep((int) ($currentDelay * 1000000));
-                $delay *= $this->backoffFactor;
-            }
-        }
         }
 
         if ($lastException !== null) {
@@ -60,6 +60,7 @@ class Retry
                 return true;
             }
         }
+
         return false;
     }
 

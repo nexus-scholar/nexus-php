@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class RateLimiterTest extends TestCase
 {
-    public function testConstruction(): void
+    public function test_construction(): void
     {
         $limiter = new RateLimiter(rate: 10.0, capacity: 20);
 
@@ -15,19 +15,19 @@ class RateLimiterTest extends TestCase
         $this->assertEquals(20, $limiter->capacity);
     }
 
-    public function testInvalidRate(): void
+    public function test_invalid_rate(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         new RateLimiter(rate: 0, capacity: 10);
     }
 
-    public function testInvalidCapacity(): void
+    public function test_invalid_capacity(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         new RateLimiter(rate: 10, capacity: 0);
     }
 
-    public function testConsume(): void
+    public function test_consume(): void
     {
         $limiter = new RateLimiter(rate: 10.0, capacity: 20);
 
@@ -39,7 +39,7 @@ class RateLimiterTest extends TestCase
         $this->assertLessThan(15.1, $tokens);
     }
 
-    public function testConsumeInsufficientTokens(): void
+    public function test_consume_insufficient_tokens(): void
     {
         $limiter = new RateLimiter(rate: 10.0, capacity: 20);
 
@@ -49,7 +49,7 @@ class RateLimiterTest extends TestCase
         $this->assertEquals(20.0, $limiter->availableTokens());
     }
 
-    public function testReset(): void
+    public function test_reset(): void
     {
         $limiter = new RateLimiter(rate: 10.0, capacity: 20);
 
@@ -59,7 +59,7 @@ class RateLimiterTest extends TestCase
         $this->assertEquals(20.0, $limiter->availableTokens());
     }
 
-    public function testTimeUntilTokens(): void
+    public function test_time_until_tokens(): void
     {
         $limiter = new RateLimiter(rate: 10.0, capacity: 20);
 
@@ -71,7 +71,7 @@ class RateLimiterTest extends TestCase
         $this->assertLessThanOrEqual(1.0, $time);
     }
 
-    public function testTimeUntilTokensAlreadyAvailable(): void
+    public function test_time_until_tokens_already_available(): void
     {
         $limiter = new RateLimiter(rate: 10.0, capacity: 20);
 

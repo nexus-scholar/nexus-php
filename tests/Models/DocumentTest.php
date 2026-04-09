@@ -2,9 +2,9 @@
 
 namespace Nexus\Tests;
 
+use Nexus\Models\Author;
 use Nexus\Models\Document;
 use Nexus\Models\ExternalIds;
-use Nexus\Models\Author;
 use PHPUnit\Framework\TestCase;
 
 class DocumentTest extends TestCase

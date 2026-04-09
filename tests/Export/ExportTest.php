@@ -2,15 +2,15 @@
 
 namespace Nexus\Tests\Export;
 
-use Nexus\Export\CsvExporter;
 use Nexus\Export\BibtexExporter;
-use Nexus\Export\RisExporter;
-use Nexus\Export\JsonlExporter;
+use Nexus\Export\CsvExporter;
 use Nexus\Export\JsonExporter;
-use Nexus\Models\Document;
+use Nexus\Export\JsonlExporter;
+use Nexus\Export\RisExporter;
 use Nexus\Models\Author;
-use Nexus\Models\ExternalIds;
+use Nexus\Models\Document;
 use Nexus\Models\DocumentCluster;
+use Nexus\Models\ExternalIds;
 use PHPUnit\Framework\TestCase;
 
 class ExportTest extends TestCase
@@ -19,13 +19,13 @@ class ExportTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->tempDir = sys_get_temp_dir() . '/nexus_test_' . uniqid();
+        $this->tempDir = sys_get_temp_dir().'/nexus_test_'.uniqid();
         mkdir($this->tempDir);
     }
 
     protected function tearDown(): void
     {
-        $files = glob($this->tempDir . '/*');
+        $files = glob($this->tempDir.'/*');
         foreach ($files as $file) {
             unlink($file);
         }
@@ -54,7 +54,7 @@ class ExportTest extends TestCase
         );
     }
 
-    public function testCsvExporterCreatesFile(): void
+    public function test_csv_exporter_creates_file(): void
     {
         $exporter = new CsvExporter($this->tempDir);
         $doc = $this->createTestDocument();
@@ -70,7 +70,7 @@ class ExportTest extends TestCase
         $this->assertStringContainsString('Smith', $content);
     }
 
-    public function testCsvExporterWithEmptyDocuments(): void
+    public function test_csv_exporter_with_empty_documents(): void
     {
         $exporter = new CsvExporter($this->tempDir);
 
@@ -81,7 +81,7 @@ class ExportTest extends TestCase
         $this->assertStringContainsString('title', $content);
     }
 
-    public function testBibtexExporterCreatesFile(): void
+    public function test_bibtex_exporter_creates_file(): void
     {
         $exporter = new BibtexExporter($this->tempDir);
         $doc = $this->createTestDocument();
@@ -97,7 +97,7 @@ class ExportTest extends TestCase
         $this->assertStringContainsString('author = {John Smith and Jane Doe}', $content);
     }
 
-    public function testBibtexExporterWithArxiv(): void
+    public function test_bibtex_exporter_with_arxiv(): void
     {
         $exporter = new BibtexExporter($this->tempDir);
         $doc = new Document(
@@ -123,7 +123,7 @@ class ExportTest extends TestCase
         $this->assertStringContainsString('eprint = {2301.12345}', $content);
     }
 
-    public function testRisExporterCreatesFile(): void
+    public function test_ris_exporter_creates_file(): void
     {
         $exporter = new RisExporter($this->tempDir);
         $doc = $this->createTestDocument();
@@ -140,7 +140,7 @@ class ExportTest extends TestCase
         $this->assertStringContainsString('ER  -', $content);
     }
 
-    public function testJsonlExporterCreatesFile(): void
+    public function test_jsonl_exporter_creates_file(): void
     {
         $exporter = new JsonlExporter($this->tempDir);
         $doc = $this->createTestDocument();
@@ -159,7 +159,7 @@ class ExportTest extends TestCase
         $this->assertEquals('10.1234/test', $data['external_ids']['doi']);
     }
 
-    public function testJsonExporterCreatesFile(): void
+    public function test_json_exporter_creates_file(): void
     {
         $exporter = new JsonExporter($this->tempDir);
         $doc = $this->createTestDocument();
@@ -179,7 +179,7 @@ class ExportTest extends TestCase
         $this->assertEquals('Test Paper', $data[0]['title']);
     }
 
-    public function testExportClusters(): void
+    public function test_export_clusters(): void
     {
         $exporter = new CsvExporter($this->tempDir);
 
@@ -202,12 +202,12 @@ class ExportTest extends TestCase
         $this->assertStringContainsString('Paper 1', $content);
     }
 
-    public function testFileExtensionProperty(): void
+    public function test_file_extension_property(): void
     {
-        $this->assertEquals('csv', (new CsvExporter())->getFileExtension());
-        $this->assertEquals('bib', (new BibtexExporter())->getFileExtension());
-        $this->assertEquals('ris', (new RisExporter())->getFileExtension());
-        $this->assertEquals('jsonl', (new JsonlExporter())->getFileExtension());
-        $this->assertEquals('json', (new JsonExporter())->getFileExtension());
+        $this->assertEquals('csv', (new CsvExporter)->getFileExtension());
+        $this->assertEquals('bib', (new BibtexExporter)->getFileExtension());
+        $this->assertEquals('ris', (new RisExporter)->getFileExtension());
+        $this->assertEquals('jsonl', (new JsonlExporter)->getFileExtension());
+        $this->assertEquals('json', (new JsonExporter)->getFileExtension());
     }
 }

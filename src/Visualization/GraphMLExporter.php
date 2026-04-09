@@ -42,7 +42,7 @@ class GraphMLExporter
         foreach ($graph->nodes() as $nodeId) {
             $nodeAttrs = $graph->nodeAttrs($nodeId);
             $label = $nodeAttrs['label'] ?? $nodeId;
-            
+
             $nodeEl = $graphEl->addChild('node');
             $nodeEl->addAttribute('id', $this->escapeXml($nodeId));
 
@@ -63,7 +63,7 @@ class GraphMLExporter
 
         foreach ($graph->edges() as $index => $edge) {
             $edgeEl = $graphEl->addChild('edge');
-            $edgeEl->addAttribute('id', 'e' . $index);
+            $edgeEl->addAttribute('id', 'e'.$index);
             $edgeEl->addAttribute('source', $this->escapeXml($edge->from));
             $edgeEl->addAttribute('target', $this->escapeXml($edge->to));
 
@@ -123,10 +123,10 @@ class GraphMLExporter
     private function getNodeId(Document $document): string
     {
         if ($document->externalIds?->doi) {
-            return 'doi:' . $document->externalIds->doi;
+            return 'doi:'.$document->externalIds->doi;
         }
 
-        return 'id:' . $document->providerId;
+        return 'id:'.$document->providerId;
     }
 
     private function escapeXml(string $value): string

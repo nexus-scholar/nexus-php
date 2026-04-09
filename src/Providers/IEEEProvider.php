@@ -9,8 +9,8 @@ use Nexus\Models\ExternalIds;
 use Nexus\Models\Query;
 use Nexus\Models\QueryField;
 use Nexus\Utils\BooleanQueryTranslator;
-use Nexus\Utils\FieldExtractor;
 use Nexus\Utils\Exceptions\AuthenticationError;
+use Nexus\Utils\FieldExtractor;
 
 class IEEEProvider extends BaseProvider
 {
@@ -40,7 +40,7 @@ class IEEEProvider extends BaseProvider
 
     public function search(Query $query): Generator
     {
-        if (!$this->config->apiKey) {
+        if (! $this->config->apiKey) {
             throw new AuthenticationError('ieee', 'API key is required for IEEE Xplore');
         }
 
@@ -112,7 +112,7 @@ class IEEEProvider extends BaseProvider
             $extractor = new FieldExtractor($raw);
 
             $title = $extractor->getString('title');
-            if (!$title) {
+            if (! $title) {
                 return null;
             }
 
@@ -123,7 +123,7 @@ class IEEEProvider extends BaseProvider
             if (is_array($authorData) && isset($authorData['authors'])) {
                 foreach ($authorData['authors'] as $au) {
                     $fullName = $au['full_name'] ?? null;
-                    if (!$fullName) {
+                    if (! $fullName) {
                         continue;
                     }
 

@@ -2,6 +2,8 @@
 
 namespace Nexus\Tests\Integration;
 
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\RequestException;
 use Nexus\Config\ConfigLoader;
 use Nexus\Config\NexusConfig;
 use Nexus\Core\NexusService;
@@ -23,12 +25,12 @@ class RealApiIntegrationTest extends TestCase
 
     private function ensureSSLCertificates(): void
     {
-        $certPath = __DIR__ . '/../../cacert.pem';
+        $certPath = __DIR__.'/../../cacert.pem';
         if (file_exists($certPath)) {
-            if (!ini_get('curl.cainfo')) {
+            if (! ini_get('curl.cainfo')) {
                 ini_set('curl.cainfo', $certPath);
             }
-            if (!ini_get('openssl.cafile')) {
+            if (! ini_get('openssl.cafile')) {
                 ini_set('openssl.cafile', $certPath);
             }
         }
@@ -38,16 +40,16 @@ class RealApiIntegrationTest extends TestCase
     {
         try {
             $test();
-        } catch (\GuzzleHttp\Exception\RequestException $e) {
+        } catch (RequestException $e) {
             $message = $e->getMessage();
             if (str_contains($message, 'SSL') || str_contains($message, 'curl error')) {
                 $this->markTestSkipped('SSL certificate verification failed. Run: curl -L -o cacert.pem https://curl.se/ca/cacert.pem');
             }
             if ($e->getCode() === 0) {
-                $this->markTestSkipped('Network connectivity issue: ' . substr($message, 0, 200));
+                $this->markTestSkipped('Network connectivity issue: '.substr($message, 0, 200));
             }
             throw $e;
-        } catch (\GuzzleHttp\Exception\ConnectException $e) {
+        } catch (ConnectException $e) {
             $message = $e->getMessage();
             if (str_contains($message, 'SSL') || str_contains($message, 'curl error')) {
                 $this->markTestSkipped('SSL certificate verification failed. Run: curl -L -o cacert.pem https://curl.se/ca/cacert.pem');
@@ -59,7 +61,7 @@ class RealApiIntegrationTest extends TestCase
                 $this->markTestSkipped('SSL certificate verification failed. Run: curl -L -o cacert.pem https://curl.se/ca/cacert.pem');
             }
             if (str_contains($message, 'API key')) {
-                $this->markTestSkipped('API key not configured: ' . $message);
+                $this->markTestSkipped('API key not configured: '.$message);
             }
             throw $e;
         }
@@ -178,7 +180,7 @@ class RealApiIntegrationTest extends TestCase
 
     public function test_nexus_service_with_config(): void
     {
-        $service = new NexusService();
+        $service = new NexusService;
         $providers = [];
 
         foreach ($this->config->getEnabledProviders() as $name) {

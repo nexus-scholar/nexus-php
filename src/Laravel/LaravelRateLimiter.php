@@ -3,8 +3,6 @@
 namespace Nexus\Laravel;
 
 use Illuminate\Cache\RateLimiter as IlluminateRateLimiter;
-use Illuminate\Http\Request;
-use Nexus\Utils\Exceptions\RateLimitError;
 
 class LaravelRateLimiter
 {
@@ -68,6 +66,7 @@ class LaravelRateLimiter
         if ($ip !== null) {
             return "{$base}:{$ip}";
         }
+
         return $base;
     }
 

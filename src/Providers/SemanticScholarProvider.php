@@ -3,16 +3,17 @@
 namespace Nexus\Providers;
 
 use Generator;
+use Nexus\Core\SnowballProviderInterface;
 use Nexus\Models\Author;
 use Nexus\Models\Document;
 use Nexus\Models\ExternalIds;
 use Nexus\Models\Query;
 use Nexus\Utils\FieldExtractor;
-use Nexus\Core\SnowballProviderInterface;
 
 class SemanticScholarProvider extends BaseProvider implements SnowballProviderInterface
 {
     private const BASE_URL = 'https://api.semanticscholar.org/graph/v1/paper/search/bulk';
+
     private const FIELDS = [
         'paperId',
         'corpusId',
@@ -77,7 +78,7 @@ class SemanticScholarProvider extends BaseProvider implements SnowballProviderIn
                 $totalFetched++;
             }
 
-            if (!$token) {
+            if (! $token) {
                 break;
             }
         }
@@ -106,7 +107,7 @@ class SemanticScholarProvider extends BaseProvider implements SnowballProviderIn
         $extractor = new FieldExtractor($raw);
         $title = $extractor->getString('title');
 
-        if (!$title) {
+        if (! $title) {
             return null;
         }
 
@@ -142,12 +143,14 @@ class SemanticScholarProvider extends BaseProvider implements SnowballProviderIn
         $q = preg_replace('/\bAND\b/i', '+', $text);
         $q = preg_replace('/\bOR\b/i', '|', $q);
         $q = preg_replace('/\bNOT\b\s+/i', '-', $q);
-        return trim((string)preg_replace('/\s+/', ' ', $q));
+
+        return trim((string) preg_replace('/\s+/', ' ', $q));
     }
 
     private function extractExternalIds(array $data): ExternalIds
     {
         $extractor = new FieldExtractor($data);
+
         return new ExternalIds(
             doi: $extractor->get('DOI'),
             arxivId: $extractor->get('ArXiv'),
@@ -162,12 +165,12 @@ class SemanticScholarProvider extends BaseProvider implements SnowballProviderIn
         $authors = [];
 
         foreach ($authorsData as $authorDict) {
-            if (!is_array($authorDict)) {
+            if (! is_array($authorDict)) {
                 continue;
             }
 
             $name = $authorDict['name'] ?? null;
-            if (!$name) {
+            if (! $name) {
                 continue;
             }
 
@@ -219,7 +222,7 @@ class SemanticScholarProvider extends BaseProvider implements SnowballProviderIn
                 }
 
                 $paper = $citation['citingPaper'] ?? null;
-                if (!$paper) {
+                if (! $paper) {
                     continue;
                 }
 
@@ -269,7 +272,7 @@ class SemanticScholarProvider extends BaseProvider implements SnowballProviderIn
                 }
 
                 $paper = $ref['citedPaper'] ?? null;
-                if (!$paper) {
+                if (! $paper) {
                     continue;
                 }
 
@@ -310,6 +313,7 @@ class SemanticScholarProvider extends BaseProvider implements SnowballProviderIn
 
         try {
             $response = $this->makeRequest($url, $params);
+
             return $this->normalizeResponse($response);
         } catch (\Exception $e) {
             return null;

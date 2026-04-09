@@ -2,20 +2,20 @@
 
 namespace Nexus\Tests\Normalization;
 
-use Nexus\Normalization\IDExtractor;
 use Nexus\Models\ExternalIds;
+use Nexus\Normalization\IDExtractor;
 use PHPUnit\Framework\TestCase;
 
 class IDExtractorTest extends TestCase
 {
-    public function testExtractDoi(): void
+    public function test_extract_doi(): void
     {
         $extractor = new IDExtractor(['doi' => '10.1234/example']);
 
         $this->assertEquals('10.1234/example', $extractor->extractDoi());
     }
 
-    public function testExtractDoiWithPrefix(): void
+    public function test_extract_doi_with_prefix(): void
     {
         $extractor = new IDExtractor(['doi' => 'https://doi.org/10.1234/example']);
 
@@ -23,49 +23,49 @@ class IDExtractorTest extends TestCase
         $this->assertNotNull($doi);
     }
 
-    public function testExtractArxivId(): void
+    public function test_extract_arxiv_id(): void
     {
         $extractor = new IDExtractor(['arxiv_id' => '2301.12345']);
 
         $this->assertEquals('2301.12345', $extractor->extractArxivId());
     }
 
-    public function testExtractArxivIdWithPrefix(): void
+    public function test_extract_arxiv_id_with_prefix(): void
     {
         $extractor = new IDExtractor(['arxiv_id' => 'arXiv:2301.12345']);
 
         $this->assertEquals('2301.12345', $extractor->extractArxivId());
     }
 
-    public function testExtractPmid(): void
+    public function test_extract_pmid(): void
     {
         $extractor = new IDExtractor(['pmid' => '12345678']);
 
         $this->assertEquals('12345678', $extractor->extractPmid());
     }
 
-    public function testExtractOpenalexId(): void
+    public function test_extract_openalex_id(): void
     {
         $extractor = new IDExtractor(['id' => 'W1234567890']);
 
         $this->assertEquals('W1234567890', $extractor->extractOpenalexId());
     }
 
-    public function testExtractOpenalexIdFromUrl(): void
+    public function test_extract_openalex_id_from_url(): void
     {
         $extractor = new IDExtractor(['id' => 'https://openalex.org/W1234567890']);
 
         $this->assertEquals('W1234567890', $extractor->extractOpenalexId());
     }
 
-    public function testExtractS2Id(): void
+    public function test_extract_s2_id(): void
     {
         $extractor = new IDExtractor(['corpusId' => '12345678']);
 
         $this->assertEquals('12345678', $extractor->extractS2Id());
     }
 
-    public function testExtractAll(): void
+    public function test_extract_all(): void
     {
         $data = [
             'doi' => '10.1234/test',
@@ -86,7 +86,7 @@ class IDExtractorTest extends TestCase
         $this->assertEquals('99999999', $ids->s2Id);
     }
 
-    public function testGetFirst(): void
+    public function test_get_first(): void
     {
         $extractor = new IDExtractor(['foo' => null, 'bar' => 'value']);
 
@@ -94,7 +94,7 @@ class IDExtractorTest extends TestCase
         $this->assertNull($extractor->getFirst('nonexistent'));
     }
 
-    public function testNestedGet(): void
+    public function test_nested_get(): void
     {
         $extractor = new IDExtractor(['outer' => ['inner' => 'value']]);
 

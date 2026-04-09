@@ -6,7 +6,6 @@ use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Nexus\Core\NexusService;
 use Nexus\Core\ProviderFactory;
 use Nexus\Laravel\Jobs\SearchJob;
-use Nexus\Models\Document;
 use Nexus\Models\Query;
 
 class NexusSearcher
@@ -57,10 +56,10 @@ class NexusSearcher
 
     private function getCacheKey(Query $query, ?array $providers): string
     {
-        $key = 'nexus:search:' . md5($query->text . ':' . ($query->yearMin ?? '') . ':' . ($query->yearMax ?? ''));
+        $key = 'nexus:search:'.md5($query->text.':'.($query->yearMin ?? '').':'.($query->yearMax ?? ''));
 
         if ($providers !== null) {
-            $key .= ':' . implode(',', $providers);
+            $key .= ':'.implode(',', $providers);
         }
 
         return $key;
@@ -75,6 +74,7 @@ class NexusSearcher
     {
         $tags = $this->cache->tags(['nexus-search']);
         $tags?->flush();
+
         return true;
     }
 }

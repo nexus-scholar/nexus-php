@@ -3,8 +3,6 @@
 namespace Nexus\CitationAnalysis;
 
 use Mbsoft\Graph\Domain\Graph;
-use Mbsoft\Graph\Domain\Node;
-use Mbsoft\Graph\Domain\Edge;
 use Nexus\Models\Document;
 
 class CitationGraphBuilder
@@ -112,10 +110,10 @@ class CitationGraphBuilder
     private function getNodeId(Document $document): string
     {
         if ($document->externalIds?->doi) {
-            return 'doi:' . $document->externalIds->doi;
+            return 'doi:'.$document->externalIds->doi;
         }
 
-        return 'id:' . $document->providerId;
+        return 'id:'.$document->providerId;
     }
 
     private function documentToNodeAttributes(Document $document): array
@@ -130,7 +128,7 @@ class CitationGraphBuilder
             'venue' => $document->venue,
             'query_id' => $document->queryId,
             'authors' => implode(', ', array_map(
-                fn($a) => $a->name ?? 'Unknown',
+                fn ($a) => $a->name ?? 'Unknown',
                 $document->authors
             )),
         ];
@@ -142,7 +140,7 @@ class CitationGraphBuilder
             return $title;
         }
 
-        return substr($title, 0, $maxLength - 3) . '...';
+        return substr($title, 0, $maxLength - 3).'...';
     }
 
     private function indexDocuments(array $documents): array
@@ -151,9 +149,9 @@ class CitationGraphBuilder
 
         foreach ($documents as $document) {
             if ($document->externalIds?->doi) {
-                $index['doi:' . $document->externalIds->doi] = $document;
+                $index['doi:'.$document->externalIds->doi] = $document;
             }
-            $index['id:' . $document->providerId] = $document;
+            $index['id:'.$document->providerId] = $document;
         }
 
         return $index;

@@ -28,6 +28,7 @@ snowballing, PDF retrieval, and Laravel AI integration.
 | List agent skills | `php nexus-skills/discover.php` |
 | Machine-readable skills | `php nexus-skills/discover.php --json` |
 | Install dependencies | `composer install` |
+| Update CA Certificates | `curl -L -o cacert.pem https://curl.se/ca/cacert.pem` |
 
 ---
 

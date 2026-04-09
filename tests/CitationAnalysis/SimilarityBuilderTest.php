@@ -123,13 +123,13 @@ class SimilarityBuilderTest extends TestCase
         ]);
 
         $builder = new SimilarityBuilder([$docA, $docB, $docC]);
-        
+
         $graphHighCoCitation = $builder->buildCombinedGraph(
             cocitationWeight: 1.0,
             couplingWeight: 0.0,
             threshold: 0.1
         );
-        
+
         $this->assertTrue($graphHighCoCitation->hasEdge('doi:10.1234/a', 'doi:10.1234/b'));
     }
 }

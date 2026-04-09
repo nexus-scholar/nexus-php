@@ -3,8 +3,8 @@
 namespace Nexus\Laravel\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
-use Nexus\Models\Query;
 use Illuminate\Queue\SerializesModels;
+use Nexus\Models\Query;
 
 class SearchFailed
 {

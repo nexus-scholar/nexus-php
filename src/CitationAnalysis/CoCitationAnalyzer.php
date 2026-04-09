@@ -3,12 +3,12 @@
 namespace Nexus\CitationAnalysis;
 
 use Mbsoft\Graph\Domain\Graph;
-use Mbsoft\Graph\Domain\Node;
 use Nexus\Models\Document;
 
 class CoCitationAnalyzer
 {
     private array $documents = [];
+
     private array $citingPapersMap = [];
 
     public function __construct(array $documents)
@@ -64,7 +64,7 @@ class CoCitationAnalyzer
     {
         $similarity = $this->getNormalizedSimilarity();
 
-        if (!isset($similarity[$paperId])) {
+        if (! isset($similarity[$paperId])) {
             return [];
         }
 
@@ -155,10 +155,10 @@ class CoCitationAnalyzer
     private function getNodeId(Document $document): string
     {
         if ($document->externalIds?->doi) {
-            return 'doi:' . $document->externalIds->doi;
+            return 'doi:'.$document->externalIds->doi;
         }
 
-        return 'id:' . $document->providerId;
+        return 'id:'.$document->providerId;
     }
 
     private function documentToNodeAttributes(Document $document): array
@@ -181,6 +181,6 @@ class CoCitationAnalyzer
             return $title;
         }
 
-        return substr($title, 0, $maxLength - 3) . '...';
+        return substr($title, 0, $maxLength - 3).'...';
     }
 }

@@ -18,6 +18,7 @@ class AuthorParser
 
         if (str_contains($name, ',')) {
             $parts = explode(',', $name, 2);
+
             return [
                 'family' => trim($parts[0]),
                 'given' => isset($parts[1]) ? trim($parts[1]) : null,
@@ -36,7 +37,7 @@ class AuthorParser
     }
 
     /**
-     * @param array<int|string, mixed> $authorsData
+     * @param  array<int|string, mixed>  $authorsData
      * @return Author[]
      */
     public static function parseAuthors(

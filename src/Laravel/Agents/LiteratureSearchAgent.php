@@ -2,7 +2,6 @@
 
 namespace Nexus\Laravel\Agents;
 
-use Closure;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Support\Collection;
 use Laravel\Ai\Contracts\Agent;
@@ -12,6 +11,11 @@ use Laravel\Ai\Responses\Data\Meta;
 use Laravel\Ai\Responses\Data\Usage;
 use Laravel\Ai\Responses\QueuedAgentResponse;
 use Laravel\Ai\Responses\StreamableAgentResponse;
+use Laravel\Ai\Streaming\Events\TextDelta;
+use Nexus\Core\NexusService;
+use Nexus\Laravel\Jobs\SearchJob;
+use Nexus\Laravel\NexusConfig;
+use Nexus\Laravel\NexusSearcher;
 use Nexus\Laravel\Tools\LiteratureSearchTool;
 use Nexus\Models\Document;
 use Nexus\Models\Query;
@@ -61,30 +65,35 @@ class LiteratureSearchAgent implements Agent
     public function withInstructions(string $instructions): self
     {
         $this->instructions = $instructions;
+
         return $this;
     }
 
     public function withTools(array $tools): self
     {
         $this->tools = $tools;
+
         return $this;
     }
 
     public function withTool(LiteratureSearchTool $tool): self
     {
         $this->tools = [$tool];
+
         return $this;
     }
 
     public function withProvider(?string $provider): self
     {
         $this->defaultProvider = $provider;
+
         return $this;
     }
 
     public function withMaxResults(int $maxResults): self
     {
         $this->defaultMaxResults = $maxResults;
+
         return $this;
     }
 
@@ -94,6 +103,7 @@ class LiteratureSearchAgent implements Agent
         if (isset($this->tools[0]) && $this->tools[0] instanceof LiteratureSearchTool) {
             $this->tools[0]->withAbstract($include);
         }
+
         return $this;
     }
 
@@ -103,6 +113,7 @@ class LiteratureSearchAgent implements Agent
         if (isset($this->tools[0]) && $this->tools[0] instanceof LiteratureSearchTool) {
             $this->tools[0]->withAuthors($include);
         }
+
         return $this;
     }
 
@@ -141,7 +152,7 @@ class LiteratureSearchAgent implements Agent
         return new StreamableAgentResponse(
             invocationId: uniqid('nexus_'),
             generator: function () use ($output): iterable {
-                yield new \Laravel\Ai\Streaming\Events\TextDelta($output);
+                yield new TextDelta($output, 'block_1', 'nexus', 'literature-search');
             },
             meta: new Meta(
                 provider: 'nexus',
@@ -160,7 +171,7 @@ class LiteratureSearchAgent implements Agent
         $queryData = $query?->toArray() ?? [];
         $providers = $this->getProviders($provider);
 
-        $job = new \Nexus\Laravel\Jobs\SearchJob(
+        $job = new SearchJob(
             new Query(
                 text: $queryData['text'] ?? '',
                 maxResults: $queryData['max_results'] ?? $this->defaultMaxResults,
@@ -207,6 +218,7 @@ class LiteratureSearchAgent implements Agent
     public function search(Query $query, ?array $providers = null): Collection
     {
         $searcher = $this->resolveSearcher();
+
         return new Collection($searcher->search($query, $providers ?? $this->getProviders($providers)));
     }
 
@@ -280,12 +292,13 @@ INSTRUCTIONS;
         return null;
     }
 
-    protected function resolveSearcher(): \Nexus\Laravel\NexusSearcher
+    protected function resolveSearcher(): NexusSearcher
     {
         $app = app();
-        return new \Nexus\Laravel\NexusSearcher(
-            $app->make(\Nexus\Core\NexusService::class),
-            \Nexus\Laravel\NexusConfig::fromLaravelConfig(),
+
+        return new NexusSearcher(
+            $app->make(NexusService::class),
+            NexusConfig::fromLaravelConfig(),
             $app->make('cache.store')
         );
     }
@@ -317,7 +330,7 @@ INSTRUCTIONS;
 
     protected function createEmptyResponse(string $message): AgentResponse
     {
-        $usage = new Usage();
+        $usage = new Usage;
         $meta = new Meta(provider: 'nexus', model: 'literature-search');
 
         return new AgentResponse(
@@ -376,7 +389,7 @@ INSTRUCTIONS;
             return 'Unknown';
         }
 
-        $names = array_map(fn($author) => $author->name, $authors);
+        $names = array_map(fn ($author) => $author->name, $authors);
         $first = $names[0] ?? 'Unknown';
         $count = count($names);
 
@@ -399,7 +412,7 @@ INSTRUCTIONS;
                 'url' => $doc->url,
                 'provider' => $doc->provider,
                 'year' => $doc->year,
-                'authors' => array_map(fn($a) => $a->name, $doc->authors ?? []),
+                'authors' => array_map(fn ($a) => $a->name, $doc->authors ?? []),
             ];
         }, $results);
     }

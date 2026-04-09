@@ -2,9 +2,10 @@
 
 namespace Nexus\Laravel;
 
-use Nexus\Config\ConfigLoader;
 use Nexus\Config\NexusConfig as BaseConfig;
+use Nexus\Config\ProviderSettings;
 use Nexus\Models\DeduplicationConfig;
+use Nexus\Models\DeduplicationStrategyName;
 
 class NexusConfig extends BaseConfig
 {
@@ -24,7 +25,7 @@ class NexusConfig extends BaseConfig
 
     public function __construct(array $laravelConfig = [])
     {
-        if (!empty($laravelConfig)) {
+        if (! empty($laravelConfig)) {
             $this->loadFromLaravelConfig($laravelConfig);
         } else {
             parent::__construct();
@@ -51,12 +52,12 @@ class NexusConfig extends BaseConfig
 
         $providers = [];
         foreach ($config['providers'] ?? [] as $name => $settings) {
-            $providers[$name] = \Nexus\Config\ProviderSettings::fromArray($settings);
+            $providers[$name] = ProviderSettings::fromArray($settings);
         }
         $this->providers = $providers;
 
         $this->deduplication = new DeduplicationConfig(
-            strategy: \Nexus\Models\DeduplicationStrategyName::from($config['deduplication']['strategy'] ?? 'conservative'),
+            strategy: DeduplicationStrategyName::from($config['deduplication']['strategy'] ?? 'conservative'),
             fuzzyThreshold: (int) ($config['deduplication']['fuzzy_threshold'] ?? 97),
             maxYearGap: (int) ($config['deduplication']['max_year_gap'] ?? 1)
         );
@@ -65,6 +66,7 @@ class NexusConfig extends BaseConfig
     public static function fromLaravelConfig(): self
     {
         $laravelConfig = config('nexus', []);
+
         return new self($laravelConfig);
     }
 }

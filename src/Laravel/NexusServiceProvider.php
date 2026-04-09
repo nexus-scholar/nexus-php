@@ -4,30 +4,27 @@ namespace Nexus\Laravel;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\ServiceProvider;
-use Nexus\Config\ConfigLoader;
 use Nexus\Core\NexusService;
-use Nexus\Core\ProviderFactory;
 use Nexus\Laravel\Agents\LiteratureSearchAgent;
 use Nexus\Laravel\Commands\SearchCommand;
+use Nexus\Laravel\Commands\SkillsCommand;
 use Nexus\Laravel\Events\SearchCompleted;
 use Nexus\Laravel\Events\SearchStarted;
-use Nexus\Laravel\Jobs\SearchJob;
 use Nexus\Laravel\Listeners\LogSearchCompleted;
 use Nexus\Laravel\Listeners\LogSearchStarted;
 use Nexus\Laravel\Tools\LiteratureSearchTool;
-use Nexus\Models\Query;
 
 class NexusServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../../config/nexus-laravel.php',
+            __DIR__.'/../../config/nexus-laravel.php',
             'nexus'
         );
 
         $this->app->singleton(NexusService::class, function ($app) {
-            return new NexusService();
+            return new NexusService;
         });
 
         $this->app->singleton(NexusConfig::class, function ($app) {
@@ -60,14 +57,13 @@ class NexusServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 SearchCommand::class,
-                SkillsCommand::class,
             ]);
         }
 
         $this->publishes([
-            __DIR__ . '/../../config/nexus-laravel.php' => config_path('nexus.php'),
+            __DIR__.'/../../config/nexus-laravel.php' => config_path('nexus.php'),
         ], 'nexus-config');
-    
+
         $this->registerEvents();
     }
 

@@ -3,12 +3,11 @@
 namespace Nexus\Config;
 
 use Nexus\Models\DeduplicationConfig;
-use Nexus\Models\DeduplicationStrategyName;
 
 class NexusConfig
 {
     /**
-     * @param array<string, ProviderSettings> $providers
+     * @param  array<string, ProviderSettings>  $providers
      */
     public function __construct(
         public string $mailto = '',
@@ -16,7 +15,7 @@ class NexusConfig
         public int $yearMax = 2026,
         public string $language = 'en',
         public array $providers = [],
-        public DeduplicationConfig $deduplication = new DeduplicationConfig()
+        public DeduplicationConfig $deduplication = new DeduplicationConfig
     ) {}
 
     public function getProviderSettings(string $name): ?ProviderSettings
@@ -37,6 +36,7 @@ class NexusConfig
                 $enabled[] = $name;
             }
         }
+
         return $enabled;
     }
 }

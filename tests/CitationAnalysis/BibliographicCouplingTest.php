@@ -123,9 +123,9 @@ class BibliographicCouplingTest extends TestCase
         $this->assertNotEmpty($clusters);
         $hasAbcCluster = false;
         foreach ($clusters as $cluster) {
-            if (count($cluster) === 3 && 
-                in_array('doi:10.1234/a', $cluster) && 
-                in_array('doi:10.1234/b', $cluster) && 
+            if (count($cluster) === 3 &&
+                in_array('doi:10.1234/a', $cluster) &&
+                in_array('doi:10.1234/b', $cluster) &&
                 in_array('doi:10.1234/c', $cluster)) {
                 $hasAbcCluster = true;
                 break;

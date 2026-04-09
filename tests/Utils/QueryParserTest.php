@@ -4,7 +4,6 @@ namespace Nexus\Tests\Utils;
 
 use Nexus\Models\QueryField;
 use Nexus\Utils\QueryParser;
-use Nexus\Utils\QueryToken;
 use PHPUnit\Framework\TestCase;
 
 class QueryParserTest extends TestCase
@@ -13,7 +12,7 @@ class QueryParserTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->parser = new QueryParser();
+        $this->parser = new QueryParser;
     }
 
     public function test_parse_simple_word()

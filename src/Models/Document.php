@@ -7,7 +7,7 @@ use DateTime;
 class Document
 {
     /**
-     * @param Author[] $authors
+     * @param  Author[]  $authors
      */
     public function __construct(
         public string $title,
@@ -27,8 +27,8 @@ class Document
         public ?int $clusterId = null,
         public ?array $rawData = null
     ) {
-        $this->externalIds = $externalIds ?? new ExternalIds();
-        $this->retrievedAt = $retrievedAt ?? new DateTime();
+        $this->externalIds = $externalIds ?? new ExternalIds;
+        $this->retrievedAt = $retrievedAt ?? new DateTime;
     }
 
     public function toArray(): array
@@ -40,7 +40,7 @@ class Document
             'provider_id' => $this->providerId,
             'external_ids' => $this->externalIds->toArray(),
             'abstract' => $this->abstract,
-            'authors' => array_map(fn(Author $author) => $author->toArray(), $this->authors),
+            'authors' => array_map(fn (Author $author) => $author->toArray(), $this->authors),
             'venue' => $this->venue,
             'url' => $this->url,
             'language' => $this->language,

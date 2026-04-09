@@ -8,6 +8,7 @@ use Nexus\Models\Document;
 class BibliographicCoupling
 {
     private array $documents = [];
+
     private array $referencesMap = [];
 
     public function __construct(array $documents)
@@ -48,7 +49,7 @@ class BibliographicCoupling
     {
         $couplingMatrix = $this->buildCouplingMatrix();
 
-        if (!isset($couplingMatrix[$paperId])) {
+        if (! isset($couplingMatrix[$paperId])) {
             return [];
         }
 
@@ -95,7 +96,7 @@ class BibliographicCoupling
             $queue = [$nodeId];
             $visited[$nodeId] = true;
 
-            while (!empty($queue)) {
+            while (! empty($queue)) {
                 $current = array_shift($queue);
                 $cluster[] = $current;
 
@@ -108,14 +109,14 @@ class BibliographicCoupling
                         $neighbor = $edge->from;
                     }
 
-                    if ($neighbor && !isset($visited[$neighbor])) {
+                    if ($neighbor && ! isset($visited[$neighbor])) {
                         $visited[$neighbor] = true;
                         $queue[] = $neighbor;
                     }
                 }
             }
 
-            if (!empty($cluster)) {
+            if (! empty($cluster)) {
                 $clusters[] = $cluster;
             }
         }
@@ -152,10 +153,10 @@ class BibliographicCoupling
     private function getNodeId(Document $document): string
     {
         if ($document->externalIds?->doi) {
-            return 'doi:' . $document->externalIds->doi;
+            return 'doi:'.$document->externalIds->doi;
         }
 
-        return 'id:' . $document->providerId;
+        return 'id:'.$document->providerId;
     }
 
     private function documentToNodeAttributes(Document $document): array
@@ -178,6 +179,6 @@ class BibliographicCoupling
             return $title;
         }
 
-        return substr($title, 0, $maxLength - 3) . '...';
+        return substr($title, 0, $maxLength - 3).'...';
     }
 }

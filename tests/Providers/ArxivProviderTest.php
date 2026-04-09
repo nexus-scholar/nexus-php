@@ -2,15 +2,15 @@
 
 namespace Nexus\Tests\Providers;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use Nexus\Models\Document;
 use Nexus\Models\ProviderConfig;
 use Nexus\Models\Query;
 use Nexus\Providers\ArxivProvider;
 use PHPUnit\Framework\TestCase;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
 
 class ArxivProviderTest extends TestCase
 {
@@ -18,6 +18,7 @@ class ArxivProviderTest extends TestCase
     {
         $mock = new MockHandler($responses);
         $handlerStack = HandlerStack::create($mock);
+
         return new Client(['handler' => $handlerStack]);
     }
 
@@ -25,8 +26,9 @@ class ArxivProviderTest extends TestCase
     {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>
         <feed xmlns="http://www.w3.org/2005/Atom">
-            <entry>' . $entries . '</entry>
+            <entry>'.$entries.'</entry>
         </feed>';
+
         return new Response(200, [], $xml);
     }
 

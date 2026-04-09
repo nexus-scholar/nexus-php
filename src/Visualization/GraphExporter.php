@@ -3,7 +3,6 @@
 namespace Nexus\Visualization;
 
 use Mbsoft\Graph\Domain\Graph;
-use Nexus\Models\Document;
 
 class GraphExporter
 {
@@ -14,9 +13,9 @@ class GraphExporter
         ?array $options = []
     ): string|array {
         return match (strtolower($format)) {
-            'gexf' => (new GexfExporter())->export($graph, $documents, $options),
-            'graphml' => (new GraphMLExporter())->export($graph, $documents, $options),
-            'cytoscape' => (new CytoscapeExporter())->export($graph, $documents, $options),
+            'gexf' => (new GexfExporter)->export($graph, $documents, $options),
+            'graphml' => (new GraphMLExporter)->export($graph, $documents, $options),
+            'cytoscape' => (new CytoscapeExporter)->export($graph, $documents, $options),
             default => throw new \InvalidArgumentException("Unknown format: $format. Supported formats: gexf, graphml, cytoscape"),
         };
     }
@@ -31,7 +30,7 @@ class GraphExporter
         $content = self::export($graph, $format, $documents, $options);
 
         $directory = dirname($filepath);
-        if (!is_dir($directory)) {
+        if (! is_dir($directory)) {
             mkdir($directory, 0755, recursive: true);
         }
 

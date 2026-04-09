@@ -11,10 +11,10 @@ class CytoscapeExporterTest extends TestCase
     public function test_export_empty_graph(): void
     {
         $graph = new Graph(directed: true);
-        $exporter = new CytoscapeExporter();
-        
+        $exporter = new CytoscapeExporter;
+
         $result = $exporter->export($graph);
-        
+
         $this->assertIsArray($result);
         $this->assertArrayHasKey('elements', $result);
         $this->assertArrayHasKey('nodes', $result['elements']);
@@ -36,12 +36,12 @@ class CytoscapeExporterTest extends TestCase
             'label' => 'Paper B',
             'title' => 'Paper B Title',
         ]);
-        
-        $exporter = new CytoscapeExporter();
+
+        $exporter = new CytoscapeExporter;
         $result = $exporter->export($graph);
-        
+
         $this->assertCount(2, $result['elements']['nodes']);
-        
+
         $nodeIds = array_column($result['elements']['nodes'], 'data');
         $nodeIds = array_column($nodeIds, 'id');
         $this->assertContains('paper_a', $nodeIds);
@@ -54,10 +54,10 @@ class CytoscapeExporterTest extends TestCase
         $graph->addNode('a');
         $graph->addNode('b');
         $graph->addEdge('a', 'b', ['weight' => 2.5]);
-        
-        $exporter = new CytoscapeExporter();
+
+        $exporter = new CytoscapeExporter;
         $result = $exporter->export($graph);
-        
+
         $this->assertCount(1, $result['elements']['edges']);
         $this->assertEquals('cites', $result['elements']['edges'][0]['data']['interaction']);
         $this->assertEquals(2.5, $result['elements']['edges'][0]['data']['weight']);
@@ -69,10 +69,10 @@ class CytoscapeExporterTest extends TestCase
         $graph->addNode('a');
         $graph->addNode('b');
         $graph->addEdge('a', 'b', ['weight' => 1.5]);
-        
-        $exporter = new CytoscapeExporter();
+
+        $exporter = new CytoscapeExporter;
         $result = $exporter->export($graph);
-        
+
         $this->assertCount(1, $result['elements']['edges']);
         $this->assertEquals('similar_to', $result['elements']['edges'][0]['data']['interaction']);
     }
@@ -81,10 +81,10 @@ class CytoscapeExporterTest extends TestCase
     {
         $graph = new Graph(directed: true);
         $graph->addNode('a');
-        
-        $exporter = new CytoscapeExporter();
+
+        $exporter = new CytoscapeExporter;
         $result = $exporter->export($graph);
-        
+
         $this->assertArrayHasKey('data', $result);
         $this->assertEquals('nexus-php', $result['data']['creator']);
     }
@@ -93,10 +93,10 @@ class CytoscapeExporterTest extends TestCase
     {
         $graph = new Graph(directed: true);
         $graph->addNode('a');
-        
-        $exporter = new CytoscapeExporter();
+
+        $exporter = new CytoscapeExporter;
         $result = $exporter->export($graph);
-        
+
         $this->assertArrayHasKey('data_schema', $result);
         $this->assertArrayHasKey('nodes', $result['data_schema']);
         $this->assertArrayHasKey('edges', $result['data_schema']);
@@ -106,10 +106,10 @@ class CytoscapeExporterTest extends TestCase
     {
         $graph = new Graph(directed: true);
         $graph->addNode('a', ['label' => 'A', 'year' => 2024]);
-        
-        $exporter = new CytoscapeExporter();
+
+        $exporter = new CytoscapeExporter;
         $result = $exporter->export($graph);
-        
+
         $this->assertArrayHasKey('color', $result['elements']['nodes'][0]['data']);
         $this->assertMatchesRegularExpression('/^#[0-9a-f]{6}$/', $result['elements']['nodes'][0]['data']['color']);
     }

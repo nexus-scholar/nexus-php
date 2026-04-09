@@ -11,10 +11,10 @@ class GraphMLExporterTest extends TestCase
     public function test_export_empty_graph(): void
     {
         $graph = new Graph(directed: true);
-        $exporter = new GraphMLExporter();
-        
+        $exporter = new GraphMLExporter;
+
         $graphml = $exporter->export($graph);
-        
+
         $this->assertStringContainsString('<?xml', $graphml);
         $this->assertStringContainsString('<graphml', $graphml);
         $this->assertStringContainsString('<graph', $graphml);
@@ -32,10 +32,10 @@ class GraphMLExporterTest extends TestCase
             'label' => 'Paper B',
             'title' => 'Paper B Title',
         ]);
-        
-        $exporter = new GraphMLExporter();
+
+        $exporter = new GraphMLExporter;
         $graphml = $exporter->export($graph);
-        
+
         $this->assertStringContainsString('id="paper_a"', $graphml);
         $this->assertStringContainsString('id="paper_b"', $graphml);
     }
@@ -46,10 +46,10 @@ class GraphMLExporterTest extends TestCase
         $graph->addNode('a');
         $graph->addNode('b');
         $graph->addEdge('a', 'b', ['weight' => 2.5]);
-        
-        $exporter = new GraphMLExporter();
+
+        $exporter = new GraphMLExporter;
         $graphml = $exporter->export($graph);
-        
+
         $this->assertStringContainsString('edgedefault="directed"', $graphml);
         $this->assertStringContainsString('>2.5<', $graphml);
     }
@@ -60,10 +60,10 @@ class GraphMLExporterTest extends TestCase
         $graph->addNode('a');
         $graph->addNode('b');
         $graph->addEdge('a', 'b', ['weight' => 1.5]);
-        
-        $exporter = new GraphMLExporter();
+
+        $exporter = new GraphMLExporter;
         $graphml = $exporter->export($graph);
-        
+
         $this->assertStringContainsString('edgedefault="undirected"', $graphml);
     }
 
@@ -71,10 +71,10 @@ class GraphMLExporterTest extends TestCase
     {
         $graph = new Graph(directed: true);
         $graph->addNode('a', ['label' => 'Node A']);
-        
-        $exporter = new GraphMLExporter();
+
+        $exporter = new GraphMLExporter;
         $graphml = $exporter->export($graph);
-        
+
         $this->assertStringContainsString('<key', $graphml);
         $this->assertStringContainsString('attr.name="label"', $graphml);
     }

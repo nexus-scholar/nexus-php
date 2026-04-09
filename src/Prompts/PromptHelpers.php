@@ -43,7 +43,7 @@ class PromptHelpers
         string $oaPreference = 'prefer_oa'
     ): array {
         $query = $mainConcept;
-        
+
         $booleanModifiers = [];
         foreach ($keywords as $keyword) {
             $booleanModifiers[] = "({$mainConcept} AND {$keyword})";

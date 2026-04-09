@@ -10,14 +10,14 @@ class LiteratureSearchAgentTest extends TestCase
 {
     public function test_agent_can_be_instantiated(): void
     {
-        $agent = new LiteratureSearchAgent();
+        $agent = new LiteratureSearchAgent;
 
         $this->assertInstanceOf(LiteratureSearchAgent::class, $agent);
     }
 
     public function test_agent_has_default_instructions(): void
     {
-        $agent = new LiteratureSearchAgent();
+        $agent = new LiteratureSearchAgent;
 
         $instructions = $agent->instructions();
 
@@ -28,7 +28,7 @@ class LiteratureSearchAgentTest extends TestCase
 
     public function test_agent_can_set_custom_instructions(): void
     {
-        $agent = new LiteratureSearchAgent();
+        $agent = new LiteratureSearchAgent;
         $customInstructions = 'You are a helpful assistant.';
 
         $result = $agent->withInstructions($customInstructions);
@@ -39,7 +39,7 @@ class LiteratureSearchAgentTest extends TestCase
 
     public function test_agent_has_tools(): void
     {
-        $agent = new LiteratureSearchAgent();
+        $agent = new LiteratureSearchAgent;
 
         $tools = $agent->tools();
 
@@ -59,14 +59,14 @@ class LiteratureSearchAgentTest extends TestCase
 
     public function test_agent_has_search_method(): void
     {
-        $agent = new LiteratureSearchAgent();
+        $agent = new LiteratureSearchAgent;
 
         $this->assertTrue(method_exists($agent, 'search'));
     }
 
     public function test_agent_implements_agent_interface(): void
     {
-        $agent = new LiteratureSearchAgent();
+        $agent = new LiteratureSearchAgent;
 
         $this->assertTrue(method_exists($agent, 'instructions'));
         $this->assertTrue(method_exists($agent, 'messages'));
@@ -81,7 +81,7 @@ class LiteratureSearchAgentTest extends TestCase
 
     public function test_agent_with_provider(): void
     {
-        $agent = new LiteratureSearchAgent();
+        $agent = new LiteratureSearchAgent;
 
         $result = $agent->withProvider('openalex');
 
@@ -90,7 +90,7 @@ class LiteratureSearchAgentTest extends TestCase
 
     public function test_agent_with_max_results(): void
     {
-        $agent = new LiteratureSearchAgent();
+        $agent = new LiteratureSearchAgent;
 
         $result = $agent->withMaxResults(50);
 
@@ -99,7 +99,7 @@ class LiteratureSearchAgentTest extends TestCase
 
     public function test_agent_with_abstract(): void
     {
-        $agent = new LiteratureSearchAgent();
+        $agent = new LiteratureSearchAgent;
 
         $result = $agent->withAbstract(true);
 
@@ -108,7 +108,7 @@ class LiteratureSearchAgentTest extends TestCase
 
     public function test_agent_with_authors(): void
     {
-        $agent = new LiteratureSearchAgent();
+        $agent = new LiteratureSearchAgent;
 
         $result = $agent->withAuthors(true);
 

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Nexus\Export;
 
-use Nexus\Models\Document;
-use Nexus\Models\DocumentCluster;
 use Nexus\Utils\Exceptions\ExportError;
 
 abstract class BaseExporter implements ExporterInterface
@@ -15,7 +13,7 @@ abstract class BaseExporter implements ExporterInterface
     public function __construct(?string $outputDir = null)
     {
         $this->outputDir = $outputDir ?? '.';
-        if (!is_dir($this->outputDir)) {
+        if (! is_dir($this->outputDir)) {
             mkdir($this->outputDir, 0755, true);
         }
     }
@@ -28,15 +26,16 @@ abstract class BaseExporter implements ExporterInterface
 
     protected function getOutputPath(string $filename): string
     {
-        return rtrim($this->outputDir, '/\\') . DIRECTORY_SEPARATOR . $filename;
+        return rtrim($this->outputDir, '/\\').DIRECTORY_SEPARATOR.$filename;
     }
 
     protected function ensureExtension(string $filename, string $extension): string
     {
-        $ext = '.' . ltrim($extension, '.');
-        if (!str_ends_with($filename, $ext)) {
+        $ext = '.'.ltrim($extension, '.');
+        if (! str_ends_with($filename, $ext)) {
             $filename .= $ext;
         }
+
         return $filename;
     }
 

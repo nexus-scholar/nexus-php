@@ -21,7 +21,7 @@ class CytoscapeExporter
         foreach ($graph->nodes() as $nodeId) {
             $nodeAttrs = $graph->nodeAttrs($nodeId);
             $label = $nodeAttrs['label'] ?? $nodeId;
-            
+
             $nodeData = [
                 'data' => [
                     'id' => $nodeId,
@@ -52,7 +52,7 @@ class CytoscapeExporter
         foreach ($graph->edges() as $index => $edge) {
             $edgeData = [
                 'data' => [
-                    'id' => 'e' . $index,
+                    'id' => 'e'.$index,
                     'source' => $edge->from,
                     'target' => $edge->to,
                     'weight' => $edge->attributes['weight'] ?? 1.0,
@@ -115,9 +115,9 @@ class CytoscapeExporter
     private function getNodeId(Document $document): string
     {
         if ($document->externalIds?->doi) {
-            return 'doi:' . $document->externalIds->doi;
+            return 'doi:'.$document->externalIds->doi;
         }
 
-        return 'id:' . $document->providerId;
+        return 'id:'.$document->providerId;
     }
 }

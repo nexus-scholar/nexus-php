@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Nexus\Normalization;
 
 use Nexus\Models\Document;
-use Nexus\Models\ExternalIds;
-use Nexus\Models\Author;
 
 class ResponseNormalizer
 {
@@ -24,7 +22,7 @@ class ResponseNormalizer
             $titleField = $fieldMap['title'] ?? 'title';
             $title = $this->getString($data, $titleField);
 
-            if (!$title) {
+            if (! $title) {
                 return null;
             }
 
@@ -72,6 +70,7 @@ class ResponseNormalizer
             );
         } catch (\Throwable $e) {
             error_log("Failed to normalize document: {$e->getMessage()}");
+
             return null;
         }
     }
@@ -82,7 +81,7 @@ class ResponseNormalizer
         $current = $data;
 
         foreach ($parts as $part) {
-            if ($current === null || !is_array($current)) {
+            if ($current === null || ! is_array($current)) {
                 return $default;
             }
             $current = $current[$part] ?? $default;
@@ -94,6 +93,7 @@ class ResponseNormalizer
     protected function getString(array $data, string $path, string $default = ''): string
     {
         $value = $this->get($data, $path);
+
         return $value !== null ? trim((string) $value) : $default;
     }
 
@@ -114,6 +114,7 @@ class ResponseNormalizer
     protected function getList(array $data, string $path, ?array $default = null): array
     {
         $value = $this->get($data, $path);
+
         return is_array($value) ? $value : ($default ?? []);
     }
 }

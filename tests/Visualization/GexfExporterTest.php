@@ -11,10 +11,10 @@ class GexfExporterTest extends TestCase
     public function test_export_empty_graph(): void
     {
         $graph = new Graph(directed: true);
-        $exporter = new GexfExporter();
-        
+        $exporter = new GexfExporter;
+
         $gexf = $exporter->export($graph);
-        
+
         $this->assertStringContainsString('<?xml', $gexf);
         $this->assertStringContainsString('<gexf', $gexf);
         $this->assertStringContainsString('<nodes', $gexf);
@@ -35,10 +35,10 @@ class GexfExporterTest extends TestCase
             'title' => 'Paper B Title',
             'year' => 2023,
         ]);
-        
-        $exporter = new GexfExporter();
+
+        $exporter = new GexfExporter;
         $gexf = $exporter->export($graph);
-        
+
         $this->assertStringContainsString('id="paper_a"', $gexf);
         $this->assertStringContainsString('id="paper_b"', $gexf);
         $this->assertStringContainsString('label="Paper A"', $gexf);
@@ -50,10 +50,10 @@ class GexfExporterTest extends TestCase
         $graph->addNode('a');
         $graph->addNode('b');
         $graph->addEdge('a', 'b', ['weight' => 2.5]);
-        
-        $exporter = new GexfExporter();
+
+        $exporter = new GexfExporter;
         $gexf = $exporter->export($graph);
-        
+
         $this->assertStringContainsString('defaultedgetype="directed"', $gexf);
         $this->assertStringContainsString('weight="2.5"', $gexf);
     }
@@ -64,10 +64,10 @@ class GexfExporterTest extends TestCase
         $graph->addNode('a');
         $graph->addNode('b');
         $graph->addEdge('a', 'b', ['weight' => 1.5]);
-        
-        $exporter = new GexfExporter();
+
+        $exporter = new GexfExporter;
         $gexf = $exporter->export($graph);
-        
+
         $this->assertStringContainsString('defaultedgetype="undirected"', $gexf);
     }
 
@@ -76,10 +76,10 @@ class GexfExporterTest extends TestCase
         $graph = new Graph(directed: true);
         $graph->addNode('a', ['label' => 'Node A', 'year' => 2024]);
         $graph->addNode('b', ['label' => 'Node B', 'year' => 2020]);
-        
+
         $exporter = new GexfExporter(version: '1.2');
         $gexf = $exporter->export($graph, [], ['include_attributes' => false]);
-        
+
         $this->assertStringContainsString('version="1.2"', $gexf);
     }
 
@@ -87,10 +87,10 @@ class GexfExporterTest extends TestCase
     {
         $graph = new Graph(directed: true);
         $graph->addNode('a');
-        
+
         $exporter = new GexfExporter(creator: 'test-creator');
         $gexf = $exporter->export($graph);
-        
+
         $this->assertStringContainsString('<creator>test-creator</creator>', $gexf);
     }
 
@@ -101,10 +101,10 @@ class GexfExporterTest extends TestCase
             'label' => 'Paper with <special> & "chars"',
             'title' => 'Title with <special> chars',
         ]);
-        
-        $exporter = new GexfExporter();
+
+        $exporter = new GexfExporter;
         $gexf = $exporter->export($graph);
-        
+
         $this->assertStringContainsString('&lt;special&gt;', $gexf);
         $this->assertStringNotContainsString('<special>', $gexf);
     }

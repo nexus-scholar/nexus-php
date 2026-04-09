@@ -2,14 +2,12 @@
 
 namespace Nexus\Tests\Providers;
 
-use Nexus\Models\ProviderConfig;
-use Nexus\Models\Query;
-use Nexus\Providers\PubMedProvider;
-use PHPUnit\Framework\TestCase;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
+use Nexus\Models\ProviderConfig;
+use Nexus\Providers\PubMedProvider;
+use PHPUnit\Framework\TestCase;
 
 class PubMedProviderTest extends TestCase
 {
@@ -17,6 +15,7 @@ class PubMedProviderTest extends TestCase
     {
         $mock = new MockHandler($responses);
         $handlerStack = HandlerStack::create($mock);
+
         return new Client(['handler' => $handlerStack]);
     }
 

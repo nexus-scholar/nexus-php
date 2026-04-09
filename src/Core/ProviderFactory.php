@@ -2,17 +2,17 @@
 
 namespace Nexus\Core;
 
+use InvalidArgumentException;
 use Nexus\Config\NexusConfig;
 use Nexus\Models\ProviderConfig;
-use Nexus\Providers\BaseProvider;
-use Nexus\Providers\OpenAlexProvider;
 use Nexus\Providers\ArxivProvider;
-use Nexus\Providers\SemanticScholarProvider;
+use Nexus\Providers\BaseProvider;
 use Nexus\Providers\CrossrefProvider;
-use Nexus\Providers\PubMedProvider;
-use Nexus\Providers\IEEEProvider;
 use Nexus\Providers\DOAJProvider;
-use InvalidArgumentException;
+use Nexus\Providers\IEEEProvider;
+use Nexus\Providers\OpenAlexProvider;
+use Nexus\Providers\PubMedProvider;
+use Nexus\Providers\SemanticScholarProvider;
 
 class ProviderFactory
 {
@@ -55,6 +55,7 @@ class ProviderFactory
         foreach ($config->getEnabledProviders() as $name) {
             $providers[$name] = self::makeFromConfig($name, $config);
         }
+
         return $providers;
     }
 

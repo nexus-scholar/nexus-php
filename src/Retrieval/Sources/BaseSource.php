@@ -20,7 +20,7 @@ abstract class BaseSource implements PDFSourceInterface
     ) {
         $options = [
             'timeout' => 30,
-            'verify' => dirname(__DIR__, 3) . '/cacert.pem',
+            'verify' => dirname(__DIR__, 3).'/cacert.pem',
         ];
 
         $this->client = new Client($options);
@@ -32,7 +32,7 @@ abstract class BaseSource implements PDFSourceInterface
 
     protected function downloadFile(string $url, string $outputPath, int $retries = 2): bool
     {
-        $tempPath = $outputPath . '.tmp';
+        $tempPath = $outputPath.'.tmp';
 
         for ($attempt = 0; $attempt <= $retries; $attempt++) {
             try {
@@ -52,7 +52,7 @@ abstract class BaseSource implements PDFSourceInterface
 
                 $body = $response->getBody()->getContents();
 
-                if (!$this->isValidPdf($body)) {
+                if (! $this->isValidPdf($body)) {
                     continue;
                 }
 
@@ -60,6 +60,7 @@ abstract class BaseSource implements PDFSourceInterface
 
                 if (file_exists($tempPath)) {
                     rename($tempPath, $outputPath);
+
                     return true;
                 }
             } catch (\Exception $e) {

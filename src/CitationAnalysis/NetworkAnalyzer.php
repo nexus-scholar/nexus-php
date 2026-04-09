@@ -2,15 +2,16 @@
 
 namespace Nexus\CitationAnalysis;
 
-use Mbsoft\Graph\Domain\Graph;
-use Mbsoft\Graph\Domain\Edge;
 use Mbsoft\Graph\Algorithms\Centrality\PageRank;
 use Mbsoft\Graph\Algorithms\Components\StronglyConnected;
+use Mbsoft\Graph\Domain\Graph;
 
 class NetworkAnalyzer
 {
     private array $adjacencyList = [];
+
     private array $reverseAdjacencyList = [];
+
     private array $nodes = [];
 
     public function __construct(private Graph $graph)
@@ -20,7 +21,7 @@ class NetworkAnalyzer
 
     public function findInfluentialPapers(int $topN = 10): array
     {
-        $pagerank = new PageRank();
+        $pagerank = new PageRank;
         $scores = $pagerank->compute($this->graph);
 
         arsort($scores);
@@ -48,7 +49,8 @@ class NetworkAnalyzer
     public function findClusters(): array
     {
         if ($this->graph->isDirected()) {
-            $scc = new StronglyConnected();
+            $scc = new StronglyConnected;
+
             return $scc->findComponents($this->graph);
         }
 
@@ -78,16 +80,16 @@ class NetworkAnalyzer
 
             foreach ($toRemove as $nodeId) {
                 $removed[$nodeId] = true;
-                $remainingNodes = array_filter($remainingNodes, fn($id) => $id !== $nodeId);
+                $remainingNodes = array_filter($remainingNodes, fn ($id) => $id !== $nodeId);
 
                 foreach ($this->adjacencyList[$nodeId] ?? [] as $neighbor) {
-                    if (!isset($removed[$neighbor])) {
+                    if (! isset($removed[$neighbor])) {
                         $nodeDegrees[$neighbor] = ($nodeDegrees[$neighbor] ?? 1) - 1;
                     }
                 }
 
                 foreach ($this->reverseAdjacencyList[$nodeId] ?? [] as $neighbor) {
-                    if (!isset($removed[$neighbor])) {
+                    if (! isset($removed[$neighbor])) {
                         $nodeDegrees[$neighbor] = ($nodeDegrees[$neighbor] ?? 1) - 1;
                     }
                 }
@@ -117,7 +119,7 @@ class NetworkAnalyzer
         $queue = [[$seedId, 0]];
         $visited[$seedId] = true;
 
-        while (!empty($queue)) {
+        while (! empty($queue)) {
             [$current, $currentDepth] = array_shift($queue);
 
             if ($currentDepth >= $depth) {
@@ -125,14 +127,14 @@ class NetworkAnalyzer
             }
 
             foreach ($this->adjacencyList[$current] ?? [] as $neighbor) {
-                if (!isset($visited[$neighbor])) {
+                if (! isset($visited[$neighbor])) {
                     $visited[$neighbor] = true;
                     $queue[] = [$neighbor, $currentDepth + 1];
                 }
             }
 
             foreach ($this->reverseAdjacencyList[$current] ?? [] as $neighbor) {
-                if (!isset($visited[$neighbor])) {
+                if (! isset($visited[$neighbor])) {
                     $visited[$neighbor] = true;
                     $queue[] = [$neighbor, $currentDepth + 1];
                 }
@@ -154,7 +156,7 @@ class NetworkAnalyzer
         $queue = [[$fromId, [$fromId]]];
         $visited[$fromId] = true;
 
-        while (!empty($queue)) {
+        while (! empty($queue)) {
             [$current, $path] = array_shift($queue);
 
             foreach ($this->adjacencyList[$current] ?? [] as $neighbor) {
@@ -162,7 +164,7 @@ class NetworkAnalyzer
                     return array_merge($path, [$neighbor]);
                 }
 
-                if (!isset($visited[$neighbor])) {
+                if (! isset($visited[$neighbor])) {
                     $visited[$neighbor] = true;
                     $queue[] = [$neighbor, array_merge($path, [$neighbor])];
                 }
@@ -184,10 +186,10 @@ class NetworkAnalyzer
             $source = $edge->from;
             $target = $edge->to;
 
-            if (!isset($this->adjacencyList[$source])) {
+            if (! isset($this->adjacencyList[$source])) {
                 $this->adjacencyList[$source] = [];
             }
-            if (!isset($this->reverseAdjacencyList[$target])) {
+            if (! isset($this->reverseAdjacencyList[$target])) {
                 $this->reverseAdjacencyList[$target] = [];
             }
 
@@ -225,19 +227,19 @@ class NetworkAnalyzer
             $queue = [$nodeId];
             $visited[$nodeId] = true;
 
-            while (!empty($queue)) {
+            while (! empty($queue)) {
                 $current = array_shift($queue);
                 $component[] = $current;
 
                 foreach ($this->adjacencyList[$current] ?? [] as $neighbor) {
-                    if (!isset($visited[$neighbor])) {
+                    if (! isset($visited[$neighbor])) {
                         $visited[$neighbor] = true;
                         $queue[] = $neighbor;
                     }
                 }
 
                 foreach ($this->reverseAdjacencyList[$current] ?? [] as $neighbor) {
-                    if (!isset($visited[$neighbor])) {
+                    if (! isset($visited[$neighbor])) {
                         $visited[$neighbor] = true;
                         $queue[] = $neighbor;
                     }
