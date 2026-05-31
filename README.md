@@ -1,5 +1,9 @@
 # Nexus PHP
 
+> **Status:** Legacy PHP predecessor to [`nexus-scholar/core`](https://github.com/nexus-scholar/core).
+>
+> This repository is kept public as historical and technical context for the Nexus Scholar PHP ecosystem. New SLR workflow package work should start from `nexus-scholar/core`; this repo remains useful for older provider, citation-network, and retrieval examples that informed the current package design.
+
 [![tests](https://github.com/nexus-scholar/nexus-php/actions/workflows/test.yml/badge.svg)](https://github.com/nexus-scholar/nexus-php/actions/workflows/test.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PHP Version](https://img.shields.io/badge/PHP-%5E8.3-777bb4.svg)](https://www.php.net/)
